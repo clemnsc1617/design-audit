@@ -1,0 +1,16 @@
+{
+  "name": "design-audit-plugin",
+  "owner": {
+    "name": "Clemens Chen"
+  },
+  "metadata": {
+    "description": "Local marketplace for the design-audit plugin — research-backed design audits with cited scorecards and annotated HTML reports"
+  },
+  "plugins": [
+    {
+      "name": "design-audit",
+      "source": "./",
+      "description": "Research-backed design audits of any interface — cited scorecard + annotated HTML report"
+    }
+  ]
+}
