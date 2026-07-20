@@ -34,7 +34,35 @@ critique practice. Method rules applied to every pass:
 66 draft criteria total — deliberately over target (~58) so the M2a review cuts
 rather than stretches.
 
-## Known cross-dimension overlaps (decide at review)
+## Overlap rulings — decided by Clemens, 2026-07-19 (binding for M2b)
+
+1. **Target size:** CUT US-15's numeric check. AC-07 owns the measurement (WCAG 24px
+   floor + platform 44pt/48dp flags from the platforms table); placement/adjacency
+   note folds into AC-07's check.
+2. **Signal-to-noise:** MERGE US-14 + VD-12 into one usability criterion covering
+   content relevance and visual noise.
+3. **Icon labels:** US-10 keeps the label check; VD-13 narrows to image
+   informativeness + rendering quality.
+4. **Cross-screen consistency:** KEEP both layers (AC-12/13 = WCAG floor,
+   CO-02/03 = craft bar) with cross-references so one flaw isn't double-penalized.
+5. **AC-06 text spacing:** KEEP, reframed as a measured spacing assessment
+   (values measurable from a single screen, exact with DOM/Figma) plus
+   breakage-risk flags — verdict language anchored to SC 1.4.12's values but not
+   claiming full conformance (the SC's own test requires applying user overrides).
+   **AC-09 focus visible:** KEEP as conditional (like AC-11): scoreable only when a
+   captured screen/recording shows a focused state; otherwise N/A "needs keyboard
+   test" + CSS risk flags.
+6. **Error trio:** UF-04's recovery-path check folds into US-08; AC-11 stays
+   (text-not-color is a distinct normative requirement). All share one N/A trigger
+   (no error state captured).
+7. **VD/CO borders (spacing, type, alignment):** KEEP all six; CO-06/CO-07 are
+   auto-N/A without DOM/Figma data (no measured values → no token-discipline score).
+8. **Rare conditionals (US-07, UF-05, UF-06):** KEEP; N/A costs nothing in the math.
+
+Net effect: 66 → 63 criteria entering M2b (US-15 cut; US-14+VD-12 merged; UF-04
+folded into US-08).
+
+## Original overlap notes (superseded by the rulings above)
 
 1. **Target size:** US-15 (NN/g 1cm physical) vs AC-07 (WCAG 2.5.8 24px) vs the
    platforms table (HIG 44pt / M3 48dp). Proposal: keep AC-07 as the scored WCAG
