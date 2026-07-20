@@ -18,10 +18,10 @@ Five dimensions: **usability, visual design, accessibility, consistency, user fl
 **Progressive disclosure rule:** load exactly one reference file at a time, use it,
 move on. Never load all references up front.
 
-**Honest-fallback rule:** if a step below points to a reference file that does not
-exist yet, stop and tell the user that part of the audit is not installed yet
-(this plugin is under construction, milestone by milestone). Never improvise
-criteria, thresholds, weights, or scores that the reference files don't provide.
+**Honest-fallback rule:** if a step below points to a file that does not exist yet
+(currently the Step 5 report pipeline), tell the user that part is not installed
+yet and deliver everything up to it. Never improvise criteria, thresholds,
+weights, or scores that the reference files don't provide.
 
 ## Workflow
 
@@ -45,40 +45,71 @@ flow; order matters for Step 6.
 
 ### Step 1 — Classify platform & context
 
-<!-- placeholder: filled in M2c (references/platforms.md) -->
+Read `references/platforms.md`. Per screen, work down its classification procedure
+(exact dimensions → aspect ratio → status bar → browser chrome → nav patterns →
+responsive-pair rule) and record:
 
-Per screen, classify as mobile app (iOS/Android) / mobile web / desktop web /
-desktop app / responsive pair using `references/platforms.md`, and record which
-convention set (Apple HIG, Material 3, web) and threshold values apply. Infer
-audience and product type. At most one clarifying question for ambiguous cases.
-The classification and assumptions go in the report header.
+- **Bucket** (mobile app iOS/Android / mobile web / desktop web / desktop app /
+  responsive pair) + the deciding signals, verbatim enough to be checkable.
+- **Convention set** now in force (HIG / Material 3 / web) — this resolves every
+  platform-dependent threshold in Step 2.
+- **Inferred audience and product type** (one line each, labeled as inferred).
+
+Ask **at most one** clarifying question, only in the cases platforms.md enumerates
+(native-vs-web ambiguity; style/dimension mismatch; OS-indeterminate native app).
+If unanswered, apply its stated default (WCAG floor + platform-risk flags) and say
+so. Everything recorded here goes in the report header as classification +
+assumptions.
 
 ### Step 2 — Audit, one dimension at a time
 
-<!-- placeholder: filled in M2b/M2c (references/usability.md, visual-design.md,
-accessibility.md, consistency.md, user-flow.md) -->
+Fixed order: `usability.md` → `visual-design.md` → `accessibility.md` →
+`consistency.md` → `user-flow.md`. For each: load that one file, evaluate every
+criterion against every screen, then move on. Never load two dimension files at
+once.
 
-For each dimension: load that dimension's reference file, evaluate every criterion
-against every screen, record verdict (pass/partial/fail/N-A) + evidence +
-approximate coordinates for visual findings, then unload and move to the next
-dimension. Resolve platform-dependent thresholds via Step 1. Prefer measured checks
-(DOM/Figma data) over visual estimation when available.
+Record per criterion:
+- **Verdict** — pass / partial / fail / N/A, judged strictly against the file's
+  Pass/Partial/Fail anchors. Every N/A carries a reason from scoring.md §1's list.
+- **Evidence** — the concrete observation (what, where, measured value when the
+  check is measured). Prefer DOM/Figma-measured values over visual estimation
+  whenever Step 0 captured them.
+- **Coordinates** — for visual findings: screen id + approximate x%/y% (region box
+  when the issue covers an area). These feed the Step 5 annotations.
+- **Severity** — for every fail/partial: 0–4 per the file's severity-guidance
+  section, with a one-clause frequency/impact/persistence justification.
+
+Thresholds with platform variants resolve through the Step 1 classification and
+`platforms.md` — never from memory. Honor the cross-reference rules (one flaw,
+one criterion — see accessibility/consistency files) and each criterion's
+Needs/Assessability tags. Responsive pairs: audit each screen against its own
+column, plus cross-breakpoint parity checks under consistency.
 
 ### Step 3 — Score
 
-<!-- placeholder: filled in M3 (references/scoring.md) -->
-
-Apply the scoring math from `references/scoring.md`: pass = 1, partial = 0.5,
-fail = 0, N/A excluded from the denominator; per-dimension scores; weighted
-0–100 overall; grade band.
+Read `references/scoring.md` and apply it exactly: pass 1 / partial 0.5 / fail 0,
+N/A excluded; dimension = 100 × points/applicable (one decimal); equal weights
+with the redistribution rule (single-screen: flow evaluated but unscored, 25% × 4;
+any zero-applicable dimension drops out, 100/k each); overall rounded to integer;
+grade from the band table. Show the arithmetic — the scorecard must let the reader
+recompute the overall by hand. Never fold severity into the score.
 
 ### Step 4 — Markdown scorecard in chat
 
-<!-- placeholder: filled in M3 -->
+Emit, in order:
 
-Emit the scorecard as chat markdown: per-dimension tables
-(criterion ID | standard | source | 🟢/🟡/🔴 | reasoning), dimension subtotals,
-weighted overall + grade, and Top-3 priorities.
+1. **Header** — input type, platform classification + deciding signals,
+   assumptions, capture limitations (what couldn't be measured and why).
+2. **Per-dimension tables** — `ID | standard (short) | source | 🟢/🟡/🔴/⚪ |
+   reasoning`, one row per criterion including N/As (⚪ + reason). Subtotal line
+   under each: points / applicable → dimension score. Unscored dimensions say so
+   ("evaluated, unscored — single-screen") and still list their verdicts.
+3. **Overall** — the weighted-sum arithmetic written out, integer score, grade,
+   and the mandatory framing from scoring.md §4 (directional, ±5, adjacent grades
+   not meaningfully different).
+4. **Top-3 priorities** — highest-severity findings (severity, criterion, one-line
+   fix direction each), worded per the critique rules: observation → criterion →
+   user impact → suggested direction, severities as estimates.
 
 ### Step 5 — Annotated HTML report
 
