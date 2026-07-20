@@ -52,7 +52,9 @@ report header.
 **The one clarifying question** (ask at most once, only when genuinely ambiguous):
 phone-sized screen with no status bar and no browser chrome ⇒ "Will this ship as a
 native app (iOS/Android) or as a mobile website/PWA?" Also ask when UI style and
-dimensions disagree (iOS-style UI at Android dimensions). **Default if
+dimensions disagree (iOS-style UI at Android dimensions), and when the screen is
+clearly a native app but the OS is indeterminate (status bar cropped, custom design
+system) ⇒ "Auditing the iOS or Android build?" **Default if
 unanswered:** score against WCAG 2.2 AA (24px target floor) and flag anything under
 44pt/48dp as platform risk; state the assumption in the report header.
 
