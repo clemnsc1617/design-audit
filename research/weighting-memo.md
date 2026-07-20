@@ -1,7 +1,12 @@
 # Weighting memo — how the design-audit scorecard should aggregate to 0–100
 
-Status: **draft for Clemens's decision** (M2a gate, second deliverable). The skill's
-`references/scoring.md` gets written only after Clemens picks a scheme here.
+Status: **DECIDED — Clemens, 2026-07-19.** Adopted: the recommendation (Option A —
+equal dimension weights, 20% × 5, redistributed 25% × 4 for single-screen audits;
+Nielsen 0–4 severity rated per finding for prioritization/annotation only, never
+folded into the score; grade bands A 90–100 / B 75–89 / C 60–74 / D 40–59 / F < 40,
+framed as directional conventions). Option C (AHP elicitation) stays available as a
+later upgrade if M6's dress rehearsal shows equal weights misranking real audits.
+This decision is binding input for `references/scoring.md` (M3).
 
 ## The decision needed
 
