@@ -78,6 +78,12 @@ Record per criterion:
   when the issue covers an area). These feed the Step 5 annotations.
 - **Severity** — for every fail/partial: 0–4 per the file's severity-guidance
   section, with a one-clause frequency/impact/persistence justification.
+- **Advisories** — a separate channel for "worth a designer's eye, not a defect":
+  deliberate patterns serving a purpose (e.g., fade-truncation before Show more),
+  findings conditional on an *inferred* objective/audience, and
+  ecosystem-convention cases the criterion marks advisory (e.g., tier-2 icons).
+  Advisories never change a verdict or the score; they surface in Step 4's watch
+  list, phrased as observations to monitor, not changes to make.
 
 Thresholds with platform variants resolve through the Step 1 classification and
 `platforms.md` — never from memory. Honor the cross-reference rules (one flaw,
@@ -110,6 +116,9 @@ Emit, in order:
 4. **Top-3 priorities** — highest-severity findings (severity, criterion, one-line
    fix direction each), worded per the critique rules: observation → criterion →
    user impact → suggested direction, severities as estimates.
+5. **Designer watch list** — the advisories: each as one line (observation +
+   which criterion flagged it + why it's advisory rather than scored). Worded as
+   "keep an eye on", never as a required change. Omit the section when empty.
 
 ### Step 5 — Annotated HTML report
 

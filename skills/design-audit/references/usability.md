@@ -36,7 +36,7 @@ honestly supports the check — degrade to N/A rather than guess.
 ### US-04 Users' language
 - **Standard:** Labels and messages use the target user's words — no unexplained acronyms, internal feature names, or developer terms; information in task order.
 - **Source:** Nielsen heuristic #2; Anna Kaley, "Match Between the System and the Real World", NN/g, 2018; Krug Ch. 4.
-- **Check:** Read every string as a first-time member of the stated audience; flag jargon, unexpanded acronyms, brand names as sole handles, system-ordered sequences.
+- **Check:** Read every string as a first-time member of the stated audience; flag jargon, unexpanded acronyms, brand names as sole handles, system-ordered sequences. When the audience/locale is **inferred rather than stated** (e.g., UI-vs-content language mixing where the user's context is unknown), record the mismatch as an **advisory** conditional on the inference — not a verdict hit (critique principle: intent before evaluation).
 - **Pass:** no flags. **Partial:** 1–2 flags off the primary path. **Fail:** primary action or required field labeled in terms users must look up.
 - **Applies:** both · **Platforms:** all · **Needs:** screenshot-only
 
@@ -76,10 +76,10 @@ honestly supports the check — degrade to N/A rather than guess.
 - **Applies:** both · **Platforms:** all · **Needs:** screenshot-only
 
 ### US-10 Icon labels
-- **Standard:** Icon-only controls are limited to near-universal symbols (home, search, print); everything else gets a permanent text label — not hover-only.
-- **Source:** Aurora Harley, "Icon Usability", NN/g, 2014.
-- **Check:** Classify each icon control universal vs not; non-universal ones need an adjacent, always-visible label.
-- **Pass:** all non-universal icons labeled permanently. **Partial:** 1–2 unlabeled in secondary spots, or hover-only labels. **Fail:** primary nav/actions are unlabeled non-universal icons.
+- **Standard:** Icon-only controls are limited to recognizable symbols; anything a typical user couldn't name on sight gets a permanent text label — not hover-only.
+- **Source:** Aurora Harley, "Icon Usability", NN/g, 2014 (sourced universal core); tier 2 is our 2026-07 operationalization (Clemens ruling) on Jakob's-Law grounds — ecosystem-learned symbols.
+- **Check:** Classify each icon control into three tiers. **Tier 1 — sourced universal** (home, magnifier/search, print): no label needed. **Tier 2 — established ecosystem conventions** (hamburger menu, kebab/meatball overflow, gear, cart, back chevron/arrow, ⊕ add, camera-in-search-field, share sheet): unlabeled is acceptable; record an **advisory** ("keep an eye on"), not a verdict hit. **Tier 3 — everything else**: needs an adjacent, always-visible label.
+- **Pass:** all tier-3 icons labeled permanently (tier-2 advisories don't affect the verdict). **Partial:** 1–2 unlabeled tier-3 icons in secondary spots, or hover-only labels. **Fail:** primary nav/actions are unlabeled tier-3 icons.
 - **Applies:** both · **Platforms:** all (stricter on touch) · **Needs:** screenshot-only
 
 ### US-11 Persistent field labels

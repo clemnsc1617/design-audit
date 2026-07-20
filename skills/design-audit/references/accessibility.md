@@ -19,7 +19,7 @@ Verdicts: pass = 1, partial = 0.5, fail = 0, N/A excluded from the denominator.
 ### AC-01 Text contrast (SC 1.4.3, AA)
 - **Standard:** Text ≥4.5:1 against background; ≥3:1 for large text (≥18pt / ≥14pt bold). No rounding — 4.499:1 fails.
 - **Check:** Sample body text, secondary text, button labels, links, placeholders; ratio = (L1+0.05)/(L2+0.05). Text over images: sample the worst-case region. Exempt: inactive controls, decoration, logotypes.
-- **Pass:** all sampled pairs meet threshold. **Partial:** only secondary/caption text fails, or failures within 0.3 where anti-aliasing muddies sampling. **Fail:** body text, labels, or primary actions below threshold.
+- **Pass:** all sampled pairs meet threshold. **Partial:** only secondary/caption text fails, or failures within 0.3 where anti-aliasing muddies sampling. **Fail:** body text, labels, or primary actions below threshold. **Deliberate-pattern exception (Clemens ruling 2026-07):** low-contrast text that is a recognized disclosure device (fade-truncation teaser before a "Show more", scrim-faded preview) where the full-contrast content is one interaction away → **advisory**, not a verdict hit — unless the faded rendering is the content's only instance.
 - **Applies:** both · **Platforms:** all (Apple's more lenient bold-text rule is ignored; WCAG is stricter and governs) · **Needs:** screenshot-only (DOM/Figma preferred for exact values) · **Assessability:** screenshot
 
 ### AC-02 Non-text contrast (SC 1.4.11, AA)
