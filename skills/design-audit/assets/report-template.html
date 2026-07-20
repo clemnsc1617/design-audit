@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}} — design audit</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --surface: #fcfcfb; --surface-2: #f1f1ef; --card: #ffffff;
+    --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #8a887f;
+    --line: #e3e2de; --accent: #3b82f6;
+    --fail: #dc2626; --partial: #d97706; --pass: #16a34a; --na: #8a887f;
+    --fail-bg: #fbeaea; --partial-bg: #faf0e0; --pass-bg: #e6f4ea; --note-bg: #eef4ee;
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    --surface: #1a1a19; --surface-2: #232322; --card: #202020;
+    --ink: #f4f4f2; --ink-2: #c3c2b7; --ink-3: #8f8e85;
+    --line: #3a3a38; --accent: #3987e5;
+    --fail: #e66767; --partial: #c98500; --pass: #199e70; --na: #8f8e85;
+    --fail-bg: #3a2525; --partial-bg: #383021; --pass-bg: #21352c; --note-bg: #262e26;
+  } }
+  :root[data-theme="light"] {
+    --surface: #fcfcfb; --surface-2: #f1f1ef; --card: #ffffff;
+    --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #8a887f;
+    --line: #e3e2de; --accent: #3b82f6;
+    --fail: #dc2626; --partial: #d97706; --pass: #16a34a; --na: #8a887f;
+    --fail-bg: #fbeaea; --partial-bg: #faf0e0; --pass-bg: #e6f4ea; --note-bg: #eef4ee;
+  }
+  :root[data-theme="dark"] {
+    --surface: #1a1a19; --surface-2: #232322; --card: #202020;
+    --ink: #f4f4f2; --ink-2: #c3c2b7; --ink-3: #8f8e85;
+    --line: #3a3a38; --accent: #3987e5;
+    --fail: #e66767; --partial: #c98500; --pass: #199e70; --na: #8f8e85;
+    --fail-bg: #3a2525; --partial-bg: #383021; --pass-bg: #21352c; --note-bg: #262e26;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--surface); color: var(--ink);
+    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  main { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  h2 { font-size: 19px; margin: 48px 0 16px; padding-top: 24px; border-top: 1px solid var(--line); }
+  h2 .sec-no { color: var(--ink-3); font-weight: 600; margin-right: 8px; }
+  h3 { font-size: 15px; margin: 20px 0 8px; }
+  .muted { color: var(--ink-2); } .small { font-size: 13px; } .tiny { font-size: 12px; color: var(--ink-3); }
+  .theme-toggle { position: fixed; top: 14px; right: 14px; background: var(--card); color: var(--ink-2);
+    border: 1px solid var(--line); border-radius: 8px; padding: 5px 10px; cursor: pointer; font-size: 12px; }
+
+  /* header */
+  .headmeta { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 10px 0 0; padding: 0; list-style: none; }
+  .headmeta li { font-size: 13px; color: var(--ink-2); }
+  .headmeta b { color: var(--ink); font-weight: 600; }
+  details.assump { margin-top: 12px; font-size: 13px; color: var(--ink-2); }
+  details.assump summary { cursor: pointer; color: var(--ink-3); }
+  details.assump ul { margin: 6px 0 0 18px; padding: 0; }
+
+  /* exec summary */
+  .exec { display: grid; grid-template-columns: 220px 1fr; gap: 28px; align-items: start; }
+  @media (max-width: 760px) { .exec { grid-template-columns: 1fr; } }
+  .dialwrap { text-align: center; }
+  .dial-note { margin-top: 6px; }
+  .bars { margin: 4px 0 0; }
+  .bar-row { display: grid; grid-template-columns: 130px 1fr 110px; gap: 12px; align-items: center; margin: 9px 0; }
+  .bar-track { height: 10px; background: var(--surface-2); border-radius: 5px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--accent); border-radius: 5px 4px 4px 5px; min-width: 4px; }
+  .bar-val { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--ink-2); }
+  .bar-name { font-size: 13px; }
+  .unscored .bar-track { background: repeating-linear-gradient(45deg, var(--surface-2) 0 6px, transparent 6px 10px); }
+  .verdict-text { margin: 14px 0 0; max-width: 62ch; }
+  .top3 { margin: 16px 0 0; padding: 0; list-style: none; counter-reset: t3; }
+  .top3 li { counter-increment: t3; margin: 8px 0; padding: 10px 12px; background: var(--card);
+    border: 1px solid var(--line); border-left: 3px solid var(--partial); border-radius: 8px; font-size: 14px; }
+  .top3 li::before { content: counter(t3) ". "; font-weight: 700; }
+  .sev-chip { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; margin-right: 6px; vertical-align: 1px; }
+
+  /* scorecard */
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 8px 0 4px; }
+  th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-3);
+    padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  td { padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr.subtotal td { font-weight: 600; border-bottom: none; background: var(--surface-2); }
+  .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .chip::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+  .chip.pass { color: var(--pass); } .chip.partial { color: var(--partial); }
+  .chip.fail { color: var(--fail); } .chip.na { color: var(--na); }
+  .src { color: var(--ink-3); font-size: 12px; }
+
+  /* annotated screens */
+  .screen-section { position: relative; margin: 26px 0; }
+  .screen-grid { display: grid; grid-template-columns: minmax(0, 58%) minmax(0, 42%); gap: 20px; align-items: start; }
+  @media (max-width: 900px) { .screen-grid { grid-template-columns: 1fr; } }
+  .shot-wrap { position: relative; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--card); }
+  .shot-wrap img { display: block; width: 100%; height: auto; }
+  .marker { position: absolute; width: 24px; height: 24px; border-radius: 50%; transform: translate(-50%, -50%);
+    color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+    border: 2.5px solid rgba(255,255,255,.95); box-shadow: 0 0 0 1px rgba(0,0,0,.25), 0 1px 5px rgba(0,0,0,.45); cursor: pointer; z-index: 3; }
+  .region { position: absolute; border: 2px dashed; border-radius: 6px; background: transparent; pointer-events: none; z-index: 2;
+    box-shadow: 0 0 0 1.5px rgba(255,255,255,.85), inset 0 0 0 1.5px rgba(255,255,255,.85); }
+  .sev-hi { background: var(--fail); border-color: var(--fail); }
+  .sev-mid { background: var(--partial); border-color: var(--partial); }
+  .sev-lo { background: var(--pass); border-color: var(--pass); }
+  .cards { display: flex; flex-direction: column; gap: 12px; }
+  .fcard { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 13.5px; }
+  .fcard .fhead { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
+  .fcard .fno { flex: none; width: 22px; height: 22px; border-radius: 50%; color: #fff; font-size: 11.5px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center; }
+  .fcard p { margin: 7px 0 0; }
+  .fcard .flabel { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3); font-weight: 600; }
+  .fcard.hover, .fcard:hover { border-color: var(--accent); }
+  .marker.hover { outline: 3px solid var(--accent); outline-offset: 1px; }
+  svg.leaders { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+  svg.leaders line { stroke: var(--ink-3); stroke-width: 1.2; stroke-dasharray: 4 4; opacity: .15; }
+  svg.leaders line.hover { stroke: var(--accent); stroke-width: 1.8; stroke-dasharray: none; opacity: 1; }
+
+  /* advisories + flow */
+  .adv { background: var(--note-bg); border: 1px solid var(--line); border-left: 3px solid var(--pass);
+    border-radius: 8px; padding: 10px 14px; margin: 10px 0; font-size: 13.5px; }
+  .adv b { display: block; margin-bottom: 2px; }
+  .flowcols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+  .flowcols ul { margin: 6px 0 0 18px; padding: 0; font-size: 13.5px; }
+  .flowcols li { margin: 5px 0; }
+  footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle">◐ theme</button>
+<main id="report"></main>
+
+<script id="audit-data" type="application/json">{{AUDIT_JSON}}</script>
+<script>
+"use strict";
+const A = JSON.parse(document.getElementById("audit-data").textContent);
+const $ = (t, cls, html) => { const e = document.createElement(t); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const DIM_NAMES = { US: "Usability", VD: "Visual design", AC: "Accessibility", CO: "Consistency", UF: "User flow" };
+const sevClass = s => s >= 3 ? "sev-hi" : s >= 1 ? "sev-mid" : "sev-lo";
+const sevWord = s => ["note", "cosmetic", "minor", "major", "catastrophe"][s] + ` (sev ${s})`;
+const main = document.getElementById("report");
+
+/* ---------- 1 · heading ---------- */
+{
+  const sec = $("section");
+  sec.append($("h1", null, esc(A.meta.title)));
+  const ul = $("ul", "headmeta");
+  const pl = A.platform.screens.map(s => `${esc(s.bucket)} · ${esc(s.conventionSet)}`)
+    .filter((v, i, a) => a.indexOf(v) === i).join(" / ");
+  [["Date", A.meta.date], ["Input", A.meta.inputType],
+   ["Platform", pl], ["Screens", A.screens.length]]
+    .forEach(([k, v]) => ul.append($("li", null, `${k}: <b>${esc(v)}</b>`)));
+  sec.append(ul);
+  const sig = A.platform.screens.map(s =>
+    `<li><b>${esc(s.screenId)}</b> → ${esc(s.bucket)} — ${s.signals.map(esc).join("; ")}</li>`).join("");
+  const det = $("details", "assump",
+    `<summary>Classification signals, assumptions &amp; capture limitations</summary>
+     <ul>${sig}</ul>
+     ${A.meta.assumptions.length ? `<h3>Assumptions</h3><ul>${A.meta.assumptions.map(a => `<li>${esc(a)}</li>`).join("")}</ul>` : ""}
+     ${A.meta.limitations.length ? `<h3>Capture limitations</h3><ul>${A.meta.limitations.map(a => `<li>${esc(a)}</li>`).join("")}</ul>` : ""}`);
+  sec.append(det);
+  main.append(sec);
+}
+
+/* ---------- 2 · executive summary ---------- */
+{
+  const sec = $("section");
+  sec.append($("h2", null, `<span class="sec-no">②</span>Executive summary`));
+  const grid = $("div", "exec");
+
+  // score dial
+  const dial = $("div", "dialwrap");
+  if (A.meta.overall !== null) {
+    const R = 84, C = 2 * Math.PI * R, frac = A.meta.overall / 100;
+    dial.innerHTML =
+      `<svg width="200" height="200" viewBox="0 0 200 200" role="img" aria-label="Overall score ${A.meta.overall} of 100, grade ${A.meta.grade}">
+        <circle cx="100" cy="100" r="${R}" fill="none" stroke="var(--surface-2)" stroke-width="12"/>
+        <circle cx="100" cy="100" r="${R}" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round"
+          stroke-dasharray="${(frac * C).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 100 100)"/>
+        <text x="100" y="97" text-anchor="middle" font-size="44" font-weight="700" fill="var(--ink)">${A.meta.overall}</text>
+        <text x="100" y="128" text-anchor="middle" font-size="17" font-weight="600" fill="var(--ink-2)">Grade ${esc(A.meta.grade)}</text>
+      </svg>`;
+  } else {
+    dial.append($("p", "muted", "No dimension could be scored from this input."));
+  }
+  dial.append($("p", "tiny dial-note", "Directional: ±5 run-to-run variance — adjacent grades are not meaningfully different."));
+  grid.append(dial);
+
+  // bars + verdict + top3
+  const right = $("div");
+  const bars = $("div", "bars");
+  A.dimensions.forEach(d => {
+    const row = $("div", "bar-row" + (d.scored ? "" : " unscored"));
+    row.append($("span", "bar-name", esc(d.name)));
+    const track = $("div", "bar-track");
+    if (d.scored) { const f = $("div", "bar-fill"); f.style.width = d.score + "%"; track.append(f); }
+    row.append(track);
+    row.append($("span", "bar-val", d.scored
+      ? `${d.score.toFixed(1)} · w ${(d.weight * 100).toFixed(0)}%`
+      : "unscored"));
+    bars.append(row);
+  });
+  right.append(bars);
+  right.append($("p", "verdict-text", esc(A.meta.summary)));
+
+  const fx = [...A.findings].sort((a, b) => b.severity - a.severity).slice(0, 3);
+  if (fx.length) {
+    right.append($("h3", null, "Top priorities"));
+    const ol = $("ul", "top3");
+    fx.forEach(f => {
+      const chipStyle = f.severity >= 3 ? "background:var(--fail-bg);color:var(--fail)"
+        : f.severity >= 1 ? "background:var(--partial-bg);color:var(--partial)"
+        : "background:var(--pass-bg);color:var(--pass)";
+      ol.append($("li", null,
+        `<span class="sev-chip" style="${chipStyle}">${esc(sevWord(f.severity))}</span>` +
+        `<b>${esc(f.title)}</b> <span class="src">(${esc(f.criterionId)})</span><br>` +
+        `<span class="muted small">${esc(f.fix)}</span>`));
+    });
+    right.append(ol);
+    right.append($("p", "tiny", "Severities are single-evaluator estimates (Nielsen 1994 caveat)."));
+  }
+  grid.append(right);
+  sec.append(grid);
+  main.append(sec);
+}
+
+/* ---------- 3 · scorecard ---------- */
+{
+  const sec = $("section");
+  sec.append($("h2", null, `<span class="sec-no">③</span>Scorecard`));
+  ["US", "VD", "AC", "CO", "UF"].forEach(dimId => {
+    const rows = A.scorecard.filter(r => r.dimension === dimId);
+    if (!rows.length) return;
+    const dim = A.dimensions.find(d => d.id === dimId);
+    sec.append($("h3", null, esc(DIM_NAMES[dimId]) + (dim && !dim.scored ? ` <span class="src">— evaluated, unscored</span>` : "")));
+    const tb = $("table");
+    tb.innerHTML = `<thead><tr><th>ID</th><th>Standard</th><th>Source</th><th>Verdict</th><th>Reasoning</th></tr></thead>`;
+    const body = $("tbody");
+    rows.forEach(r => {
+      const verdict = { pass: "pass", partial: "partial", fail: "fail", na: "N/A" }[r.verdict];
+      const reason = r.verdict === "na" ? `<i>${esc(r.naReason)}</i>` : esc(r.reasoning);
+      body.append($("tr", null,
+        `<td>${esc(r.criterionId)}</td><td>${esc(r.standard)}</td><td class="src">${esc(r.source)}</td>` +
+        `<td><span class="chip ${r.verdict}">${verdict}</span></td><td>${reason}</td>`));
+    });
+    if (dim && dim.scored) {
+      body.append($("tr", "subtotal", `<td colspan="3"></td><td colspan="2">` +
+        `${dim.points} / ${dim.applicable} applicable → <b>${dim.score.toFixed(1)}</b></td>`));
+    }
+    tb.append(body);
+    sec.append(tb);
+  });
+  if (A.meta.overall !== null) {
+    const scored = A.dimensions.filter(d => d.scored);
+    const arithmetic = scored.map(d => d.score.toFixed(1)).join(" + ");
+    const w = scored.length ? (scored[0].weight * 100).toFixed(0) : 0;
+    sec.append($("p", null, `<b>Overall:</b> ${scored.length} scored dimensions × ${w}% each → ` +
+      `${(scored[0].weight).toFixed(2)} × (${arithmetic}) = ` +
+      `<b>${A.meta.overall} · Grade ${esc(A.meta.grade)}</b> <span class="tiny">(weighted mean, rounded)</span>`));
+  }
+  main.append(sec);
+}
+
+/* ---------- 4 · annotated screens ---------- */
+{
+  const sec = $("section");
+  sec.append($("h2", null, `<span class="sec-no">④</span>Annotated screens`));
+  A.screens.forEach(screen => {
+    const findings = A.findings.filter(f => f.screenId === screen.id).sort((a, b) => a.id - b.id);
+    const wrap = $("div", "screen-section");
+    wrap.append($("h3", null, esc(screen.label)));
+    const grid = $("div", "screen-grid");
+
+    const shot = $("div", "shot-wrap");
+    const img = $("img"); img.src = screen.image; img.alt = screen.label;
+    shot.append(img);
+    findings.forEach(f => {
+      if (f.w !== undefined) {
+        const rg = $("div", "region " + sevClass(f.severity));
+        rg.style.cssText = `left:${f.x}%;top:${f.y}%;width:${f.w}%;height:${f.h}%;border-color:inherit`;
+        rg.classList.add(sevClass(f.severity));
+        rg.style.borderColor = f.severity >= 3 ? "var(--fail)" : f.severity >= 1 ? "var(--partial)" : "var(--pass)";
+        rg.style.background = "transparent";
+        rg.dataset.fid = f.id;
+        shot.append(rg);
+      }
+      const mk = $("div", "marker " + sevClass(f.severity), String(f.id));
+      const mx = f.w !== undefined ? f.x : f.x, my = f.w !== undefined ? f.y : f.y;
+      mk.style.left = mx + "%"; mk.style.top = my + "%";
+      mk.dataset.fid = f.id;
+      mk.title = f.title;
+      shot.append(mk);
+    });
+    grid.append(shot);
+
+    const cards = $("div", "cards");
+    findings.forEach(f => {
+      const c = $("div", "fcard");
+      c.dataset.fid = f.id;
+      c.innerHTML =
+        `<div class="fhead"><span class="fno ${sevClass(f.severity)}">${f.id}</span>
+           <span>${esc(f.title)}</span></div>
+         <p class="tiny">${esc(f.criterionId)} · ${esc(sevWord(f.severity))} — est. · ${esc(f.source)}</p>
+         <p><span class="flabel">Observed</span><br>${esc(f.evidence)}</p>
+         <p><span class="flabel">Direction</span><br>${esc(f.fix)}</p>`;
+      cards.append(c);
+    });
+    if (!findings.length) cards.append($("p", "muted", "No located findings on this screen."));
+    grid.append(cards);
+    wrap.append(grid);
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", "leaders");
+    wrap.append(svg);
+    main.append(sec);
+    sec.append(wrap);
+
+    const draw = () => {
+      svg.innerHTML = "";
+      const wr = wrap.getBoundingClientRect();
+      findings.forEach(f => {
+        const mk = wrap.querySelector(`.marker[data-fid="${f.id}"]`);
+        const cd = wrap.querySelector(`.fcard[data-fid="${f.id}"]`);
+        if (!mk || !cd) return;
+        const m = mk.getBoundingClientRect(), c = cd.getBoundingClientRect();
+        if (c.left <= m.right) return; // stacked layout (mobile) — skip lines
+        const ln = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        ln.setAttribute("x1", m.right - wr.left - 2);
+        ln.setAttribute("y1", m.top + m.height / 2 - wr.top);
+        ln.setAttribute("x2", c.left - wr.left);
+        ln.setAttribute("y2", c.top + 16 - wr.top);
+        ln.dataset.fid = f.id;
+        svg.append(ln);
+      });
+    };
+    img.addEventListener("load", draw);
+    window.addEventListener("resize", draw);
+    if (img.complete) draw();
+
+    // hover linking
+    wrap.addEventListener("mouseover", e => {
+      const t = e.target.closest("[data-fid]");
+      if (!t) return;
+      wrap.querySelectorAll(`[data-fid="${t.dataset.fid}"]`).forEach(el => el.classList.add("hover"));
+    });
+    wrap.addEventListener("mouseout", e => {
+      const t = e.target.closest("[data-fid]");
+      if (!t) return;
+      wrap.querySelectorAll(`[data-fid="${t.dataset.fid}"]`).forEach(el => el.classList.remove("hover"));
+    });
+    wrap.addEventListener("click", e => {
+      const mk = e.target.closest(".marker");
+      if (!mk) return;
+      const cd = wrap.querySelector(`.fcard[data-fid="${mk.dataset.fid}"]`);
+      if (cd) cd.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  });
+}
+
+/* ---------- advisories ---------- */
+if (A.advisories.length) {
+  const sec = $("section");
+  sec.append($("h2", null, `<span class="sec-no">◦</span>Designer watch list <span class="src">(advisories — no score impact)</span>`));
+  A.advisories.forEach(a => sec.append($("div", "adv",
+    `<b>${esc(a.title)}${a.criterionId ? ` <span class="src">(${esc(a.criterionId)})</span>` : ""}</b>${esc(a.note)}`)));
+  main.append(sec);
+}
+
+/* ---------- 5 · flow ---------- */
+{
+  const sec = $("section");
+  sec.append($("h2", null, `<span class="sec-no">⑤</span>User flow`));
+  const cols = $("div", "flowcols");
+  [["Observed", A.flow.observed], ["Missing states & flows", A.flow.missing], ["Suggested next audits", A.flow.suggestedNext]]
+    .forEach(([title, items]) => {
+      const col = $("div");
+      col.append($("h3", null, title));
+      col.append(items.length
+        ? $("ul", null, items.map(i => `<li>${esc(i)}</li>`).join(""))
+        : $("p", "muted small", "None recorded."));
+      cols.append(col);
+    });
+  sec.append(cols);
+  main.append(sec);
+}
+
+/* footer + theme toggle */
+main.append($("footer", "tiny",
+  `Generated by the <b>design-audit</b> plugin · every criterion traces to a cited source · ` +
+  `scores are directional (±5) · severities are single-evaluator estimates.`));
+document.getElementById("themeToggle").addEventListener("click", () => {
+  const r = document.documentElement;
+  const cur = r.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  r.dataset.theme = cur === "dark" ? "light" : "dark";
+});
+</script>
+</body>
+</html>

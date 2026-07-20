@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "design-audit findings",
+  "description": "Contract between the audit (SKILL.md Steps 1-4) and scripts/build_report.py. build_report.py validates this shape with stdlib code; this file is the authoritative documentation of that contract.",
+  "type": "object",
+  "required": ["meta", "platform", "dimensions", "scorecard", "screens", "findings", "advisories", "flow"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["title", "date", "inputType", "overall", "grade", "summary", "assumptions", "limitations"],
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "inputType": { "enum": ["screenshot", "url", "figma", "video"] },
+        "overall": { "type": ["integer", "null"], "minimum": 0, "maximum": 100, "description": "null only if no dimension could be scored" },
+        "grade": { "type": ["string", "null"], "enum": ["A", "B", "C", "D", "F", null] },
+        "summary": { "type": "string", "minLength": 1, "description": "2-3 sentence verdict for the executive summary" },
+        "assumptions": { "type": "array", "items": { "type": "string" } },
+        "limitations": { "type": "array", "items": { "type": "string" }, "description": "capture limitations - what could not be measured and why" }
+      }
+    },
+    "platform": {
+      "type": "object",
+      "required": ["screens"],
+      "additionalProperties": false,
+      "properties": {
+        "screens": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["screenId", "bucket", "conventionSet", "signals"],
+            "additionalProperties": false,
+            "properties": {
+              "screenId": { "type": "string" },
+              "bucket": { "enum": ["mobile app (iOS)", "mobile app (Android)", "mobile app (OS indeterminate)", "mobile web", "desktop web", "desktop app", "responsive pair"] },
+              "conventionSet": { "enum": ["HIG", "Material 3", "web"] },
+              "signals": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+            }
+          }
+        },
+        "clarifyingQuestion": {
+          "type": "object",
+          "required": ["question", "answer"],
+          "properties": { "question": { "type": "string" }, "answer": { "type": ["string", "null"], "description": "null = unanswered, default applied" } }
+        }
+      }
+    },
+    "dimensions": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "scored", "weight", "score", "points", "applicable"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "enum": ["US", "VD", "AC", "CO", "UF"] },
+          "name": { "type": "string" },
+          "scored": { "type": "boolean" },
+          "weight": { "type": ["number", "null"], "minimum": 0, "maximum": 1, "description": "null when unscored; scored weights must sum to 1.0" },
+          "score": { "type": ["number", "null"], "minimum": 0, "maximum": 100, "description": "one decimal; null when unscored" },
+          "points": { "type": ["number", "null"], "minimum": 0 },
+          "applicable": { "type": ["integer", "null"], "minimum": 0 }
+        }
+      }
+    },
+    "scorecard": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["criterionId", "dimension", "standard", "source", "verdict", "reasoning"],
+        "additionalProperties": false,
+        "properties": {
+          "criterionId": { "type": "string", "pattern": "^(US|VD|AC|CO|UF)-\\d{2}$" },
+          "dimension": { "enum": ["US", "VD", "AC", "CO", "UF"] },
+          "standard": { "type": "string", "minLength": 1 },
+          "source": { "type": "string", "minLength": 1 },
+          "verdict": { "enum": ["pass", "partial", "fail", "na"] },
+          "reasoning": { "type": "string", "minLength": 1 },
+          "naReason": { "type": "string", "description": "REQUIRED when verdict is na (enforced by build_report.py)" }
+        }
+      }
+    },
+    "screens": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "image"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "image": { "type": "string", "description": "path relative to the findings.json file, or a data: URI" }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "screenId", "criterionId", "severity", "title", "evidence", "fix", "source", "x", "y"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "integer", "minimum": 1, "description": "marker number; unique across the report" },
+          "screenId": { "type": "string", "description": "must match a screens[].id" },
+          "criterionId": { "type": "string", "description": "must match a scorecard[].criterionId" },
+          "severity": { "type": "integer", "minimum": 0, "maximum": 4, "description": "Nielsen 0-4; annotation only" },
+          "title": { "type": "string", "minLength": 1 },
+          "evidence": { "type": "string", "minLength": 1, "description": "neutral observation - what and where" },
+          "fix": { "type": "string", "minLength": 1, "description": "direction + principle restored, tradeoff named if any" },
+          "source": { "type": "string", "minLength": 1 },
+          "x": { "type": "number", "minimum": 0, "maximum": 100, "description": "percent of screen width (marker center / region left)" },
+          "y": { "type": "number", "minimum": 0, "maximum": 100, "description": "percent of screen height (marker center / region top)" },
+          "w": { "type": "number", "minimum": 0, "maximum": 100, "description": "optional region width percent - presence of w+h renders a region box" },
+          "h": { "type": "number", "minimum": 0, "maximum": 100 }
+        }
+      }
+    },
+    "advisories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["title", "note"],
+        "additionalProperties": false,
+        "properties": {
+          "title": { "type": "string", "minLength": 1 },
+          "note": { "type": "string", "minLength": 1 },
+          "criterionId": { "type": "string" }
+        }
+      },
+      "description": "designer watch list - no score impact (Clemens M3 calibration ruling)"
+    },
+    "flow": {
+      "type": "object",
+      "required": ["observed", "missing", "suggestedNext"],
+      "additionalProperties": false,
+      "properties": {
+        "observed": { "type": "array", "items": { "type": "string" } },
+        "missing": { "type": "array", "items": { "type": "string" } },
+        "suggestedNext": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}
