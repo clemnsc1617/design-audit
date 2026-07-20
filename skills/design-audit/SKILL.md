@@ -122,12 +122,22 @@ Emit, in order:
 
 ### Step 5 — Annotated HTML report
 
-<!-- placeholder: filled in M4 (assets/report-template.html,
-assets/findings.schema.json, scripts/build_report.py) -->
-
-Write `findings.json` (validated against `assets/findings.schema.json`), run
-`scripts/build_report.py` to produce a single self-contained HTML report, verify
-marker placement in the browser pane, and offer to publish it as an Artifact.
+1. **Write `findings.json`** in the session working directory, following the
+   contract in `assets/findings.schema.json` exactly: all Step 1–4 outputs (meta,
+   platform + signals, dimensions with scored/weight/score, full scorecard incl.
+   N/A reasons, advisories, flow) plus located **findings** — marker id, screenId,
+   criterionId, severity, title, evidence, fix direction, source, and coordinates
+   as percentages (x/y point, or x/y/w/h region box — prefer region boxes; visual
+   estimation is ±3–5%, use DOM/Figma geometry when Step 0 captured it).
+2. **Build:** `python3 scripts/build_report.py findings.json -o report.html`
+   (add `--no-inline` beyond ~10 screens). The script validates first and fails
+   loudly — fix the named field, don't bypass.
+3. **Verify markers in the browser pane:** open `report.html`, zoom to 2–3
+   markers, compare against the screenshot; nudge coordinates in findings.json
+   and rebuild until markers sit on their subjects ("this area", not "this
+   pixel"). Also confirm leader lines and hover-linking work.
+4. **Offer** to publish the report as an Artifact (user's call — never publish
+   unprompted).
 
 ### Step 6 — Flow branch
 
