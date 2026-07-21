@@ -77,11 +77,15 @@
 
   /* annotated screens */
   .screen-section { position: relative; margin: 26px 0; }
-  .screen-grid { display: grid; grid-template-columns: auto minmax(280px, 1fr); gap: 20px; align-items: start; }
+  /* The shot column has a definite max (640px) so the wrapper's width can be computed
+     from the image's aspect ratio in JS (fitShot) — never a circular fit-content/%
+     dependency, which leaves the wrapper wider than the image and drags every
+     percent-positioned marker off its subject. */
+  .screen-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 1fr); gap: 20px; align-items: start; }
   @media (max-width: 900px) { .screen-grid { grid-template-columns: 1fr; } }
-  .shot-wrap { position: relative; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--card);
-    width: fit-content; max-width: 100%; }
-  .shot-wrap img { display: block; max-height: 72vh; max-width: min(100%, 640px); width: auto; height: auto; }
+  .shot-col { min-width: 0; }
+  .shot-wrap { position: relative; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--card); }
+  .shot-wrap img { display: block; width: 100%; height: auto; }
   .marker { position: absolute; width: 24px; height: 24px; border-radius: 50%; transform: translate(-50%, -50%);
     color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center;
     border: 2.5px solid rgba(255,255,255,.95); box-shadow: 0 0 0 1px rgba(0,0,0,.25), 0 1px 5px rgba(0,0,0,.45); cursor: pointer; z-index: 3; }
@@ -255,7 +259,9 @@ const main = document.getElementById("report");
       mk.dataset.fid = f.id; mk.title = f.title;
       shot.append(mk);
     });
-    grid.append(shot);
+    const shotCol = $("div", "shot-col");
+    shotCol.append(shot);
+    grid.append(shotCol);
 
     const panel = $("div", "cardpanel");
     const nav = $("div", "cardnav");
@@ -276,6 +282,20 @@ const main = document.getElementById("report");
     sec.append(wrap);
 
     let selected = findings.length ? findings[0].id : null;
+
+    // Size the wrapper to exactly the rendered image, so marker percentages map 1:1
+    // onto the screenshot. Width comes from the column (definite) and the natural
+    // aspect ratio, capped by 72vh — no dependency on the wrapper's own width.
+    const fitShot = () => {
+      if (!img.naturalWidth || !img.naturalHeight) return;
+      const availW = shotCol.clientWidth;
+      if (!availW) return;
+      const capH = window.innerHeight * 0.72;
+      let w = Math.min(availW, img.naturalWidth, 640);
+      let h = w * img.naturalHeight / img.naturalWidth;
+      if (h > capH) { h = capH; w = h * img.naturalWidth / img.naturalHeight; }
+      shot.style.width = Math.round(w) + "px";
+    };
 
     const drawLine = () => {
       svg.innerHTML = "";
@@ -308,6 +328,7 @@ const main = document.getElementById("report");
          <p><span class="flabel">What we saw</span><br>${esc(f.evidence)}</p>
          <p><span class="flabel">Suggested direction</span><br>${esc(f.fix)}</p>`;
       cardHolder.append(c);
+      fitShot();
       drawLine();
     };
 
@@ -317,8 +338,8 @@ const main = document.getElementById("report");
       selected = Number(t.dataset.fid);
       render();
     });
-    img.addEventListener("load", drawLine);
-    window.addEventListener("resize", drawLine);
+    img.addEventListener("load", () => { fitShot(); drawLine(); });
+    window.addEventListener("resize", () => { fitShot(); drawLine(); });
     render();
   });
   main.append(sec);
