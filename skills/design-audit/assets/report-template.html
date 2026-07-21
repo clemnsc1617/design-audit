@@ -77,10 +77,11 @@
 
   /* annotated screens */
   .screen-section { position: relative; margin: 26px 0; }
-  .screen-grid { display: grid; grid-template-columns: minmax(0, 58%) minmax(0, 42%); gap: 20px; align-items: start; }
+  .screen-grid { display: grid; grid-template-columns: auto minmax(280px, 1fr); gap: 20px; align-items: start; }
   @media (max-width: 900px) { .screen-grid { grid-template-columns: 1fr; } }
-  .shot-wrap { position: relative; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--card); }
-  .shot-wrap img { display: block; width: 100%; height: auto; }
+  .shot-wrap { position: relative; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--card);
+    width: fit-content; max-width: 100%; }
+  .shot-wrap img { display: block; max-height: 72vh; max-width: min(100%, 640px); width: auto; height: auto; }
   .marker { position: absolute; width: 24px; height: 24px; border-radius: 50%; transform: translate(-50%, -50%);
     color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center;
     border: 2.5px solid rgba(255,255,255,.95); box-shadow: 0 0 0 1px rgba(0,0,0,.25), 0 1px 5px rgba(0,0,0,.45); cursor: pointer; z-index: 3; }
@@ -145,6 +146,8 @@
 <script id="audit-data" type="application/json">{{AUDIT_JSON}}</script>
 <script>
 "use strict";
+// Reports open in light theme by default (Clemens ruling); the toggle still switches.
+if (!document.documentElement.dataset.theme) document.documentElement.dataset.theme = "light";
 const A = JSON.parse(document.getElementById("audit-data").textContent);
 const $ = (t, cls, html) => { const e = document.createElement(t); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
