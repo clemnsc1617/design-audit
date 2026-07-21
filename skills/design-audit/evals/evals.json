@@ -1,0 +1,81 @@
+{
+  "skill": "design-audit",
+  "lastReviewed": "2026-07",
+  "howToRun": "These are judged cases, not an automated harness — no plugin-side runner exists. Run each input in a session started with `claude --plugin-dir <repo>`, then check the observed behavior against `expect`. A case fails if ANY expectation is unmet. Cases marked \"regression\" reproduce a real defect found during development; keep them passing.",
+  "suites": [
+    {
+      "id": "trigger",
+      "purpose": "The skill must own audit/score/grade requests without stealing casual-feedback or code-review requests (PLAN's collision risk with design-critique and ui-ux-pro-max).",
+      "cases": [
+        { "id": "T1", "input": "audit this screenshot", "expect": ["design-audit activates", "asks for an input: screenshot path, URL, Figma link, or recording"], "verified": "2026-07-19" },
+        { "id": "T2", "input": "score this UI against usability heuristics", "expect": ["design-audit activates"] },
+        { "id": "T3", "input": "grade my landing page design and give me a report", "expect": ["design-audit activates"] },
+        { "id": "T4", "input": "run a design audit on https://example.com", "expect": ["design-audit activates", "follows the URL capture procedure"] },
+        { "id": "T5", "input": "what do you think of this design?", "expect": ["design-audit does NOT activate", "normal critique/conversation instead"], "verified": "2026-07-19" },
+        { "id": "T6", "input": "make this page prettier / suggest a color palette", "expect": ["design-audit does NOT activate (ui-ux-pro-max territory)"] },
+        { "id": "T7", "input": "review this React component for bugs", "expect": ["design-audit does NOT activate (code review)"] }
+      ]
+    },
+    {
+      "id": "classification",
+      "purpose": "Platform classification decides which thresholds apply; a wrong bucket applies the wrong convention set.",
+      "cases": [
+        { "id": "C1", "input": "iOS device screenshot, status bar present, labeled bottom tab bar, no browser chrome", "expect": ["bucket: mobile app (iOS)", "convention set: HIG", "deciding signals recorded in the report header"], "verified": "2026-07-20 (LinkedIn feed; capture dimensions matched an iPhone Pro Max at 3x, so scale was exact rather than estimated)" },
+        { "id": "C2", "input": "1280-wide render of a live site: top nav, footer with legal links, hyperlink styling", "expect": ["bucket: desktop web", "convention set: web", "targets scored against the 24px WCAG floor, not 44pt/48dp"], "verified": "2026-07-20 (clemenschen.com)" },
+        { "id": "C3", "input": "phone-sized screenshot with an OS status bar AND browser chrome (URL bar)", "expect": ["bucket: mobile web", "web conventions govern; platform values advisory only"], "verified": "2026-07-19 (Google SERP)" },
+        { "id": "C4", "input": "phone-sized native-app screenshot with the status bar cropped and a custom design system", "expect": ["asks the one clarifying question: iOS or Android build?", "if unanswered: WCAG floor applied and both platform guidelines flagged as risk", "assumption stated in the report header"], "verified": "2026-07-19 (TikTok Shop)" },
+        { "id": "C5", "input": "same page captured at 1280 and at 375", "expect": ["classified as a responsive pair", "cross-breakpoint parity checked under consistency"] }
+      ]
+    },
+    {
+      "id": "honesty",
+      "purpose": "The audit must never score what the evidence can't support. Every N/A carries a reason.",
+      "cases": [
+        { "id": "H1", "input": "a raw screenshot with no DOM or Figma data", "expect": ["alt text, programmatic structure, and name/role/value are N/A with 'needs DOM' reasons", "the consistency token checks (color/type/spacing) are N/A", "no invented contrast values presented as measured"] },
+        { "id": "H2", "input": "any input with no error state captured", "expect": ["error-message criteria are N/A, not failed", "the missing error state appears in the flow section"] },
+        { "id": "H3", "input": "an image pasted into chat with no file on disk", "expect": ["audit and chat scorecard still run", "user is told up front the HTML report needs the image as a file, and asked for it", "if refused: a clearly labeled placeholder — never a fabricated recreation of the UI"], "verified": "2026-07-20", "regression": "Pasted images never reach the filesystem; an early build silently annotated a mock." },
+        { "id": "H4", "input": "any report", "expect": ["standing disclosure lists the never-statically-assessable criteria (resize, reflow, keyboard, on-focus/on-input)", "coverage is printed next to the score (N of 63 checks measured)"] },
+        { "id": "H5", "input": "a screen whose objective is genuinely ambiguous (merchandising vs user task)", "expect": ["the objective-dependent finding is stated as conditional, or moved to the watch list", "no verdict asserted on an inferred objective without saying it was inferred"], "verified": "2026-07-19 (Amazon promo density)" }
+      ]
+    },
+    {
+      "id": "capture",
+      "purpose": "Capture defects manufacture false findings — the audit is only as good as what it looked at.",
+      "cases": [
+        { "id": "P1", "input": "a URL whose page is taller than the viewport", "expect": ["captured as multiple per-viewport screens (per input-capture.md), not one above-the-fold frame", "or, if only the fold was captured, that gap is stated as a limitation and NO finding is raised about content that may sit below it"], "regression": "In the M5 portfolio run, a single-fold capture produced a false 'the flow's finish line is out of frame' finding — the site's contact section existed below the fold. Verdict corrected to N/A, finding withdrawn." },
+        { "id": "P2", "input": "any screenshot larger than 1568px on its long edge", "expect": ["downscaled to a 1568px long edge before analysis", "never upscaled"] },
+        { "id": "P3", "input": "a Figma link with the Figma MCP unavailable or unauthenticated", "expect": ["says so plainly and asks for exported PNG frames", "does not silently fall back to guesswork"], "status": "untested — Figma MCP not authorized during development" }
+      ]
+    },
+    {
+      "id": "scoring",
+      "purpose": "The math must match scoring.md and be recomputable by the reader.",
+      "cases": [
+        { "id": "S1", "input": "single-screen audit", "expect": ["user flow evaluated but unscored", "remaining four dimensions weighted 25% each", "arithmetic shown in the report"], "verified": "2026-07-20 (LinkedIn: 0.25 × (94.4+95.5+100+100) = 97)" },
+        { "id": "S2", "input": "ordered multi-screen audit", "expect": ["all five dimensions scored at 20% each", "cross-screen criteria evaluated rather than N/A"], "verified": "2026-07-20 (portfolio: 0.2 × (95.8+91.7+86.4+93.8+92.9) = 92)" },
+        { "id": "S3", "input": "any audit", "expect": ["severity never enters the 0–100 math", "severity shown as words (Minor/Major/Critical), not raw numbers", "grade framed as directional with the ±5 note"] },
+        { "id": "S4", "input": "a dimension where every criterion is N/A", "expect": ["dimension reported unscored, never as 0 or 100", "its weight redistributed equally over the scored dimensions"] }
+      ]
+    },
+    {
+      "id": "flow",
+      "purpose": "Flow outputs must be a design lead's questions, not invented verdicts.",
+      "cases": [
+        { "id": "F1", "input": "single screen", "expect": ["3–5 concrete 'worth auditing next' targets naming real destinations", "missing-flows list empty"], "verified": "2026-07-20 (LinkedIn)" },
+        { "id": "F2", "input": "ordered multi-screen", "expect": ["missing-flows entries each name the screen pair that implies them", "no severities or scores attached to flow suggestions"], "verified": "2026-07-20 (portfolio: gate → wrong password; gate → unlocked study)" },
+        { "id": "F3", "input": "any flow output", "expect": ["nothing listed as missing that the capture simply failed to include — see capture/P1"] }
+      ]
+    },
+    {
+      "id": "report",
+      "purpose": "The HTML artifact must be self-contained, honest, and geometrically correct.",
+      "cases": [
+        { "id": "R1", "input": "any findings.json", "expect": ["build_report.py validates before building and fails with the exact JSON path of the first invalid field", "an N/A row without a reason is rejected"] },
+        { "id": "R2", "input": "a built report", "expect": ["single self-contained HTML: images base64-inlined, no external requests", "opens in light theme by default"] },
+        { "id": "R3", "input": "a report with annotated screens", "expect": ["screenshot wrapper matches the rendered image within the border width (no stripe)", "markers land on their subjects after the verification loop"], "regression": "A circular fit-content/percentage sizing rule left the wrapper wider than the image, dragging every percent-positioned marker off target (and collapsing the image entirely in some engines)." },
+        { "id": "R4", "input": "a portrait mobile screenshot", "expect": ["image capped to 72vh so the page stays readable", "aspect ratio preserved"] },
+        { "id": "R5", "input": "any report", "expect": ["criterion IDs appear only in the scorecard tables, never in prose", "one annotation card visible at a time, defaulting to marker 1"] }
+      ]
+    }
+  ]
+}

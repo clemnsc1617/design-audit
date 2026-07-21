@@ -201,6 +201,10 @@ const main = document.getElementById("report");
   } else {
     dial.append($("p", "muted", "Nothing could be scored from this input."));
   }
+  const applicable = A.scorecard.filter(r => r.verdict !== "na").length;
+  dial.append($("p", "tiny",
+    `Measured <b>${applicable} of ${A.scorecard.length}</b> checks — the rest didn't apply to this input ` +
+    `(the scorecard says why for each). Fewer checks means a thinner score: compare coverage before comparing scores.`));
   dial.append($("p", "tiny", "Treat the score as directional: re-runs vary by about ±5 points, so neighboring grades read the same."));
   grid.append(dial);
 
