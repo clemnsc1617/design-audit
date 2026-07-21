@@ -139,11 +139,30 @@ Emit, in order:
 4. **Offer** to publish the report as an Artifact (user's call — never publish
    unprompted).
 
-### Step 6 — Flow branch
+### Step 6 — Flow synthesis
 
-<!-- placeholder: filled in M5 -->
+Step 2 already produced the user-flow verdicts (via `references/user-flow.md`,
+including its walkthrough engine for ordered sets). Step 6 turns them into the
+flow outputs — the report's flow section and the `flow` object in findings.json.
 
-Single screen: evaluate single-screen flow criteria and suggest 3–5 adjacent flows
-to examine next. Multi-screen: additionally evaluate cross-screen criteria
-(continuity, state persistence, navigation logic, progress) and list missing flows
-(error/empty/loading/cancel states the set implies but doesn't show).
+**Single screen** (flow evaluated, unscored — scoring.md §3):
+- `observed`: 1–2 sentences on the interaction loop the screen supports.
+- `suggestedNext`: 3–5 adjacent flows worth auditing next, inferred from the
+  screen itself — where each primary action leads, and which error/empty/loading/
+  confirmation states the screen references but doesn't show. Word each as a
+  concrete audit target ("Cart (13 items) → checkout, including error and empty
+  states"), not a vague theme.
+- `missing`: leave empty — a single screen can't owe states to a sequence.
+
+**Multi screen (ordered flow)** — user flow is the fifth scored dimension (20%):
+- `observed`: the reconstructed task and how the sequence serves it (from the
+  walkthrough: goal → step order → per-transition continuity).
+- `missing`: states the sequence implies but never shows — error paths, empty
+  states, loading, cancel/abandon routes, back-navigation behavior. Each entry
+  names the screen pair that implies it ("payment → confirmation implies a
+  declined-card path; not shown"). These are report suggestions, not scored
+  verdicts.
+- `suggestedNext`: flows adjacent to the audited one, same concreteness rule.
+
+Flow outputs are conversation, not verdicts: no invented severities, no scores —
+they answer "what would a design lead ask to see next?"
