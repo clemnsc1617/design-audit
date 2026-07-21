@@ -18,10 +18,9 @@ Five dimensions: **usability, visual design, accessibility, consistency, user fl
 **Progressive disclosure rule:** load exactly one reference file at a time, use it,
 move on. Never load all references up front.
 
-**Honest-fallback rule:** if a step below points to a file that does not exist yet
-(currently the Step 5 report pipeline), tell the user that part is not installed
-yet and deliver everything up to it. Never improvise criteria, thresholds,
-weights, or scores that the reference files don't provide.
+**Honest-fallback rule:** if a step's reference file, template, or script is
+missing or fails, say so and deliver everything up to that point. Never improvise
+criteria, thresholds, weights, or scores that the reference files don't provide.
 
 ## Workflow
 
