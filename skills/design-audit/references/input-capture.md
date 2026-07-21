@@ -64,6 +64,21 @@ Use the in-app browser (Browser pane tools). Local HTML files: navigate to the
    accessible names, target sizes) instead of visual estimation.
 5. Multiple URLs given as a flow → repeat per URL in the given order.
 
+**Trust rule for mobile-width captures (learned 2026-07):** headless-Chrome CLI
+screenshots (`--headless --window-size=390,844`) can render a site's *desktop*
+layout and simply crop it — even after hydration — while a real browser at the
+same width reflows correctly. Before reporting anything about mobile layout,
+verify in a live browser at that viewport:
+
+```js
+document.documentElement.scrollWidth   // must equal window.innerWidth
+document.querySelector('meta[name=viewport]').content
+```
+
+If they disagree with the captured image, the capture is wrong, not the site.
+Prefer the in-app browser for mobile widths; never raise a reflow, overflow, or
+"doesn't adapt" finding from a headless CLI capture alone.
+
 ### 3. Figma link
 
 Use the Figma MCP server (requires the user to be authenticated to it).
