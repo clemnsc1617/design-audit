@@ -27,6 +27,15 @@ or Python + Pillow). Never upscale.
 
 ### 1. Screenshot file(s)
 
+**Pasted/dragged into chat with no file on disk (common case):** the model can see
+and audit the image, but the HTML report can only embed real files. Run the audit
+and chat scorecard normally, tell the user up front that the report needs the
+image as a file, and ask them to save/drop it (any path works) before Step 5.
+If the user can't supply the file, build the report with a clearly labeled
+layout-matched placeholder (blocks at the real proportions, marked
+"PLACEHOLDER — swap for the real screenshot"), never with a fabricated recreation
+of the UI. (Clemens ruling, 2026-07.)
+
 1. Read each file to confirm it is a legible UI screenshot (not corrupt, not blank).
 2. Copy into the working directory with ordered names; downscale if needed.
 3. If multiple files: ask the user whether they form an ordered flow (unless the
