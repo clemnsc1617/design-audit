@@ -1,0 +1,6 @@
+# macOS
+.DS_Store
+
+# Local audit inputs — screenshots may contain personal or client content
+Screenshot *.png
+*.local.*
