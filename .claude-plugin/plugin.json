@@ -1,6 +1,6 @@
 {
   "name": "design-audit",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Research-backed design audits of any interface \u2014 cited scorecard + annotated HTML report",
   "author": {
     "name": "Clemens Chen"
