@@ -24,30 +24,44 @@
   :root {
     color-scheme: light dark;
     --font: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --page: #f4f4f2; --card: #ffffff; --surface-2: #eeeeea; --track: #e4e4de;
+    --page: #fafafa; --card: #ffffff; --surface-2: #eeeeea; --track: #e4e4de;
     --ink: #1c1c1e; --ink-2: #55555a; --ink-3: #8E8E93;
     --line: #e0e0d8;
-    --fail: #FF3B30; --partial: #FF9500; --pass: #28CD41; --note: #FFCC00;
-    --fail-ink: #D10B00; --partial-ink: #A15E00; --pass-ink: #197F28; --note-ink: #876C00;
-    --fail-bg: #FDE4E3; --partial-bg: #FDF2E3; --pass-bg: #E5FAE9; --note-bg: #FDF8E3;
+    /* One hue per meaning, and exactly two steps per hue: the Apple system
+       colour itself (the deepest shade used anywhere) and a light tint of it
+       for card backgrounds. Text sitting ON a hue is dark, never white.
+       red = fail / major+critical · orange = partial / minor / grades B–C
+       green = pass / grade A · purple = cosmetic · blue = note + watch list */
+    --fail: #FF3B30;    --fail-bg: #FFE7E6;
+    --partial: #FF9500; --partial-bg: #FFF2E0;
+    --pass: #28CD41;    --pass-bg: #E5F9E8;
+    --purple: #AF52DE;  --purple-bg: #F5EAFB;
+    --blue: #007AFF;    --blue-bg: #E0EFFF;
+    --on-accent: #1C1C1E;
     --na: #8E8E93;
   }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
     --page: #000000; --card: #1C1C1E; --surface-2: #2C2C2E; --track: #3A3A3C;
     --ink: #f5f5f7; --ink-2: #c7c7cc; --ink-3: #98989D;
     --line: #38383A;
-    --fail: #FF453A; --partial: #FF9F0A; --pass: #32D74B; --note: #FFD60A;
-    --fail-ink: #FF453A; --partial-ink: #FF9F0A; --pass-ink: #32D74B; --note-ink: #FFD60A;
-    --fail-bg: #3a1f1e; --partial-bg: #3a2c15; --pass-bg: #17331d; --note-bg: #3a3316;
+    --fail: #FF453A;    --fail-bg: #332021;
+    --partial: #FF9F0A; --partial-bg: #33291C;
+    --pass: #32D74B;    --pass-bg: #1E2F22;
+    --purple: #BF5AF2;  --purple-bg: #2C2233;
+    --blue: #0A84FF;    --blue-bg: #1A2634;
+    --on-accent: #1C1C1E;
     --na: #98989D;
   } }
   :root[data-theme="dark"] {
     --page: #000000; --card: #1C1C1E; --surface-2: #2C2C2E; --track: #3A3A3C;
     --ink: #f5f5f7; --ink-2: #c7c7cc; --ink-3: #98989D;
     --line: #38383A;
-    --fail: #FF453A; --partial: #FF9F0A; --pass: #32D74B; --note: #FFD60A;
-    --fail-ink: #FF453A; --partial-ink: #FF9F0A; --pass-ink: #32D74B; --note-ink: #FFD60A;
-    --fail-bg: #3a1f1e; --partial-bg: #3a2c15; --pass-bg: #17331d; --note-bg: #3a3316;
+    --fail: #FF453A;    --fail-bg: #332021;
+    --partial: #FF9F0A; --partial-bg: #33291C;
+    --pass: #32D74B;    --pass-bg: #1E2F22;
+    --purple: #BF5AF2;  --purple-bg: #2C2233;
+    --blue: #0A84FF;    --blue-bg: #1A2634;
+    --on-accent: #1C1C1E;
     --na: #98989D;
   }
   * { box-sizing: border-box; }
@@ -73,7 +87,7 @@
   @media (max-width: 700px) { .card { padding: 22px; } }
 
   /* executive summary */
-  .exec-summary { margin: 0 0 26px; max-width: 76ch; font-size: 15.5px; }
+  .exec-summary { margin: 0 0 26px; font-size: 15.5px; }
   .exec-cols { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 36px; align-items: start; }
   @media (max-width: 820px) { .exec-cols { grid-template-columns: 1fr; gap: 24px; } }
   .dialwrap { text-align: center; }
@@ -98,13 +112,18 @@
   .lower-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 34px;
     padding-top: 28px; border-top: 1px solid var(--line); }
   @media (max-width: 820px) { .lower-cols { grid-template-columns: 1fr; gap: 26px; } }
-  .fixcard, .advcard { background: var(--page); border: 1px solid var(--line); border-radius: 12px;
+  /* each card is tinted with the hue of its own tag; the watch list is always blue */
+  .fixcard, .advcard { border: none; border-radius: 12px;
     padding: 14px 16px; margin: 0 0 12px; font-size: 13.5px; }
-  .fixcard .tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .04em;
-    text-transform: uppercase; padding: 3px 9px; border-radius: 999px; margin-bottom: 8px; }
-  .fixcard .ftitle { font-weight: 600; font-size: 14.5px; display: block; margin-bottom: 5px; }
+  .advcard { background: var(--blue-bg); }
+  /* tag rides the title line, flush to the top-right inside the padding */
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .04em;
+    text-transform: uppercase; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .fixcard .fhead-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 5px; }
+  .fixcard .ftitle { font-weight: 600; font-size: 14.5px; flex: 1 1 auto; min-width: 0; }
+  .fixcard .fhead-row .tag { flex: none; margin-top: 1px; }
   .fixcard p, .advcard p { margin: 0; color: var(--ink-2); }
-  .advcard b { display: block; margin-bottom: 4px; color: var(--ink); font-weight: 600; }
+  .advcard b { display: block; margin-bottom: 5px; color: var(--blue); font-size: 14.5px; font-weight: 600; }
 
   /* annotated screens */
   .screen-section { position: relative; margin: 0 0 30px; }
@@ -116,7 +135,7 @@
   .shot-wrap img { display: block; width: 100%; height: auto; }
   /* markers are translucent so the pixels underneath stay readable */
   .marker { position: absolute; width: 26px; height: 26px; border-radius: 50%; transform: translate(-50%, -50%);
-    color: #fff; font: 700 12px var(--font); display: flex; align-items: center; justify-content: center;
+    color: var(--on-accent); font: 700 12px var(--font); display: flex; align-items: center; justify-content: center;
     border: 1.5px solid rgba(255,255,255,.75); box-shadow: 0 1px 6px rgba(0,0,0,.28);
     cursor: pointer; z-index: 3; opacity: .72; backdrop-filter: saturate(120%); transition: opacity .12s, transform .12s; }
   .marker:hover { opacity: .92; }
@@ -124,21 +143,24 @@
   .region { position: absolute; border: 2px dashed; border-radius: 8px; pointer-events: none; z-index: 2; opacity: .4;
     box-shadow: 0 0 0 1.5px rgba(255,255,255,.7), inset 0 0 0 1.5px rgba(255,255,255,.7); }
   .region.selected { opacity: 1; }
-  .sev-hi { background: var(--fail-ink); border-color: var(--fail); }
-  .sev-mid { background: var(--partial-ink); border-color: var(--partial); }
-  .sev-low { background: var(--note-ink); border-color: var(--note); }
-  .sev-note { background: var(--pass-ink); border-color: var(--pass); }
-  .region.sev-hi, .region.sev-mid, .region.sev-low, .region.sev-note { background: transparent; }
+  .sev-fail { background: var(--fail); border-color: var(--fail); }
+  .sev-partial { background: var(--partial); border-color: var(--partial); }
+  .sev-purple { background: var(--purple); border-color: var(--purple); }
+  .sev-blue { background: var(--blue); border-color: var(--blue); }
+  .region.sev-fail, .region.sev-partial, .region.sev-purple, .region.sev-blue { background: transparent; }
   .cardpanel { position: sticky; top: 16px; }
   .cardnav { display: flex; align-items: center; gap: 7px; margin-bottom: 12px; flex-wrap: wrap; }
   .cardnav button { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); background: var(--card);
     color: var(--ink-2); font: 700 12px var(--font); cursor: pointer; }
-  .cardnav button.active { color: #fff; border-color: transparent; }
-  .cardnav button.active.sev-hi { background: var(--fail-ink); } .cardnav button.active.sev-mid { background: var(--partial-ink); }
-  .cardnav button.active.sev-low { background: var(--note-ink); } .cardnav button.active.sev-note { background: var(--pass-ink); }
-  .fcard { background: var(--page); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; font-size: 13.5px; }
-  .fcard .fhead { display: flex; align-items: center; gap: 9px; font-weight: 600; font-size: 15.5px; }
-  .fcard .fno { flex: none; width: 26px; height: 26px; border-radius: 50%; color: #fff; font: 700 12px var(--font);
+  .cardnav button.active { color: var(--on-accent); border-color: transparent; }
+  .cardnav button.active.sev-fail { background: var(--fail); } .cardnav button.active.sev-partial { background: var(--partial); }
+  .cardnav button.active.sev-purple { background: var(--purple); } .cardnav button.active.sev-blue { background: var(--blue); }
+  /* annotation card is tinted with its finding's hue */
+  .fcard { border: none; border-radius: 12px; padding: 16px 18px; font-size: 13.5px; }
+  .fcard .fhead { display: flex; align-items: flex-start; gap: 10px; font-weight: 600; font-size: 15.5px; }
+  .fcard .fhead .ftitle { flex: 1 1 auto; min-width: 0; }
+  .fcard .fhead .tag { flex: none; margin-top: 2px; }
+  .fcard .fno { flex: none; width: 26px; height: 26px; border-radius: 50%; color: var(--on-accent); font: 700 12px var(--font);
     display: inline-flex; align-items: center; justify-content: center; }
   .fcard p { margin: 10px 0 0; }
   .fcard .flabel { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3); font-weight: 600; }
@@ -146,20 +168,26 @@
   svg.leaders line { stroke: var(--ink-3); stroke-width: 1.4; opacity: .75; }
 
   /* scorecard */
-  .tabbar { display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 1px solid var(--line); }
-  .tabbar button { border: 1px solid var(--line); border-bottom: none; background: var(--page); color: var(--ink-2);
-    border-radius: 10px 10px 0 0; padding: 9px 15px; font: 500 13px var(--font); cursor: pointer; }
-  .tabbar button.active { background: var(--card); color: var(--ink); font-weight: 700; box-shadow: inset 0 2px 0 var(--pass); }
+  .tabbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+  .tabbar button { border: 1px solid var(--line); background: var(--card); color: var(--ink-2);
+    border-radius: 999px; padding: 8px 16px; font: 500 13px var(--font); cursor: pointer;
+    transition: background .12s, color .12s, border-color .12s; }
+  .tabbar button:hover { border-color: var(--ink-3); color: var(--ink); }
+  .tabbar button.active { background: var(--ink); border-color: var(--ink); color: var(--card); font-weight: 600; }
   .tabpanel { display: none; } .tabpanel.active { display: block; }
-  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 10px 0 4px; }
+  .tabbar { margin-bottom: 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 0 0 4px; }
+  .tabpanel { padding-top: 26px; }
   th { text-align: left; font: 600 11.5px var(--font); text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3);
     padding: 8px 10px; border-bottom: 1px solid var(--line); }
   td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
   tr.subtotal td { font-weight: 600; border-bottom: none; background: var(--surface-2); }
-  .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; white-space: nowrap; }
-  .chip::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
-  .chip.pass { color: var(--pass-ink); } .chip.partial { color: var(--partial-ink); }
-  .chip.fail { color: var(--fail-ink); } .chip.na { color: var(--na); }
+  /* the hue lives in the dot; the 12px label stays readable ink */
+  .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;
+    white-space: nowrap; color: var(--ink-2); }
+  .chip::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--na); }
+  .chip.pass::before { background: var(--pass); } .chip.partial::before { background: var(--partial); }
+  .chip.fail::before { background: var(--fail); } .chip.na::before { background: var(--na); }
   .src { color: var(--ink-3); font-size: 12px; }
 
   .flowcols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px; }
@@ -180,15 +208,21 @@ const A = JSON.parse(document.getElementById("audit-data").textContent);
 const $ = (t, cls, html) => { const e = document.createElement(t); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const DIM_NAMES = { US: "Usability", VD: "Visual design", AC: "Accessibility", CO: "Consistency", UF: "User flow" };
-// severity → colour role: 3–4 red, 2 orange, 1 yellow, 0 green
-const sevClass = s => s >= 3 ? "sev-hi" : s === 2 ? "sev-mid" : s === 1 ? "sev-low" : "sev-note";
+// One hue per meaning, shared by severity tags, verdicts and score bands:
+//   red    critical + major · fail verdict · grades D and F
+//   yellow minor            · partial verdict · grades B and C
+//   green  —                · pass verdict    · grade A
+//   purple cosmetic         (no verdict or grade equivalent)
+//   blue   note             · designer watch list
+const sevHue = s => s >= 3 ? "fail" : s === 2 ? "partial" : s === 1 ? "purple" : "blue";
+const sevClass = s => "sev-" + sevHue(s);
 const sevWord = s => ["Note", "Cosmetic", "Minor", "Major", "Critical"][s];
-const sevTagStyle = s => s >= 3 ? "background:var(--fail-bg);color:var(--fail-ink)"
-  : s === 2 ? "background:var(--partial-bg);color:var(--partial-ink)"
-  : s === 1 ? "background:var(--note-bg);color:var(--note-ink)"
-  : "background:var(--pass-bg);color:var(--pass-ink)";
-// score bands: 90+ green · 60–89 (B and C) yellow · below 60 red
-const scoreColor = v => v >= 90 ? "var(--pass)" : v >= 60 ? "var(--note)" : "var(--fail)";
+// solid pill: the ink as fill, so the tag stays legible on its own tinted card
+const sevTagStyle = s => `background:var(--${sevHue(s)});color:var(--on-accent)`;
+const sevTint = s => `var(--${sevHue(s)}-bg)`;
+// score bands: 90+ (A) green · 60–89 (B and C) yellow · below 60 (D and F) red
+const scoreHue = v => v >= 90 ? "pass" : v >= 60 ? "partial" : "fail";
+const scoreColor = v => `var(--${scoreHue(v)})`;      // dial, bars and the score label all share it
 const main = document.getElementById("report");
 
 /* ── heading ───────────────────────────────────────────────── */
@@ -256,7 +290,9 @@ const main = document.getElementById("report");
       track.append(f);
     }
     row.append(track);
-    row.append($("div", "bar-val", d.scored ? d.score.toFixed(1) : "—"));
+    const val = $("div", "bar-val", d.scored ? d.score.toFixed(1) : "—");
+    if (d.scored) val.style.color = scoreColor(d.score);   // exact same hue as the bar
+    row.append(val);
     right.append(row);
   });
   cols.append(right);
@@ -269,10 +305,16 @@ const main = document.getElementById("report");
   fixes.append($("h3", null, "Areas to Fix"));
   const fx = [...A.findings].sort((a, b) => b.severity - a.severity).slice(0, 3);
   if (fx.length) {
-    fx.forEach(f => fixes.append($("div", "fixcard",
-      `<span class="tag" style="${sevTagStyle(f.severity)}">${esc(sevWord(f.severity))}</span>
-       <span class="ftitle">${esc(f.title)}</span>
-       <p>${esc(f.fix)}</p>`)));
+    fx.forEach(f => {
+      const c = $("div", "fixcard",
+        `<div class="fhead-row">
+           <span class="ftitle">${esc(f.title)}</span>
+           <span class="tag" style="${sevTagStyle(f.severity)}">${esc(sevWord(f.severity))}</span>
+         </div>
+         <p>${esc(f.fix)}</p>`);
+      c.style.background = sevTint(f.severity);
+      fixes.append(c);
+    });
     fixes.append($("p", "tiny", "Severity is one reviewer's estimate of how often the issue bites and how hard it is to get past."));
   } else {
     fixes.append($("p", "muted small", "No located findings on this audit."));
@@ -377,9 +419,14 @@ const main = document.getElementById("report");
       const f = findings.find(x => x.id === selected);
       if (!f) return;
       const c = $("div", "fcard");
+      c.style.background = sevTint(f.severity);
       c.innerHTML =
-        `<div class="fhead"><span class="fno ${sevClass(f.severity)}">${f.id}</span><span>${esc(f.title)}</span></div>
-         <p class="tiny"><span class="tag" style="${sevTagStyle(f.severity)};display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:999px;margin-right:6px">${esc(sevWord(f.severity))}</span> ${esc(f.source)}</p>
+        `<div class="fhead">
+           <span class="fno ${sevClass(f.severity)}">${f.id}</span>
+           <span class="ftitle">${esc(f.title)}</span>
+           <span class="tag" style="${sevTagStyle(f.severity)}">${esc(sevWord(f.severity))}</span>
+         </div>
+         <p class="tiny">${esc(f.source)}</p>
          <p><span class="flabel">What we saw</span><br>${esc(f.evidence)}</p>
          <p><span class="flabel">Suggested direction</span><br>${esc(f.fix)}</p>`;
       cardHolder.append(c);
