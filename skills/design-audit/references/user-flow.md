@@ -122,12 +122,4 @@ can't confirm.
 
 Last reviewed: 2026-07
 
-Sources: Whitenton, "The Two UX Gulfs" (2018), "Website Forms Usability" (2016),
-nngroup.com · Budiu, "Wizards" (2017) · Rosala, "User Control and Freedom" (2020),
-"Task Analysis" (2020), "Status Trackers and Progress Updates" (2019) · Kaplan,
-"Designing Empty States" (2021), "User Journeys vs. User Flows" (2023) · Sherwin,
-"Progress Indicators" (2014) · Harley, "Visibility of System Status" (2018) ·
-Flaherty, "Evaluate Interface Learnability with Cognitive Walkthroughs" (2022),
-crediting Lewis, Polson, Wharton & Rieman (1990/1994). Full provenance:
-`research/criteria-research.md`. (UF-04 was folded into US-08 — ID intentionally
-unused so digest references stay valid.)
+Sources: see `research/reference-sources.md` (kept out of the skill's load path).

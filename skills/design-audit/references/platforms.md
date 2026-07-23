@@ -94,13 +94,4 @@ unanswered:** score against WCAG 2.2 AA (24px target floor) and flag anything un
 
 Last reviewed: 2026-07
 
-Sources: Apple HIG — "Layout" (device dimension table), "Typography" (defaults/
-minimums per platform), "Accessibility" (control-size table, spacing, contrast),
-"Buttons" (44pt hit region), "Tab bars", "Gestures" (developer.apple.com/design,
-2025) · Material 3 — "Designing > Structure" (48dp/44dp/8dp), "Type scale &
-tokens", "Navigation bar/rail/drawer guidelines" (m3.material.io) · W3C —
-Understanding SC 2.5.8 Target Size (Minimum), SC 2.5.5 (Enhanced), SC 1.4.3
-Contrast (w3.org, 2025–2026 updates) · Android Developers — "Predictive back
-design" · MDN — CSS font-size (16px default) · Figma Help — frame presets exist,
-dimensions unpublished (preset values marked UNVERIFIED above). Full provenance:
-`research/criteria-research.md`.
+Sources: see `research/reference-sources.md` (kept out of the skill's load path).

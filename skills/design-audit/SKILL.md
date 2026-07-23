@@ -42,6 +42,12 @@ If the user gave no input at all, ask for one — accept a screenshot path, a UR
 a Figma link, or a screen recording. Ask whether multiple screens form an ordered
 flow; order matters for Step 6.
 
+**Pasted image with no file path:** you can still audit it, and the report needs
+it as a file. Offer to find it in the usual places (Downloads, Desktop, the
+project) rather than making the user hunt, confirm the specific file before using
+it, and never let a missing file block the report — see input-capture.md's
+pasted-image rule for the exact wording and the permission boundary.
+
 ### Step 1 — Classify platform & context
 
 Read `references/platforms.md`. Per screen, work down its classification procedure
@@ -72,7 +78,12 @@ Record per criterion:
   Pass/Partial/Fail anchors. Every N/A carries a reason from scoring.md §1's list.
 - **Evidence** — the concrete observation (what, where, measured value when the
   check is measured). Prefer DOM/Figma-measured values over visual estimation
-  whenever Step 0 captured them.
+  whenever Step 0 captured them. **For raw screenshots, use `scripts/measure.py`
+  to get exact numbers — but only for the findings that hinge on one** (contrast
+  AC-01/AC-02, target size AC-07, grid keylines VD-06). Read everything else
+  visually; do not measure what a number won't change. On a device screenshot,
+  pass `--scale` (e.g. 3 for a 3× capture) so pixels convert to points. Do not
+  re-implement pixel sampling inline — the shipped script is the tool.
 - **Coordinates** — for visual findings: screen id + approximate x%/y% (region box
   when the issue covers an area). These feed the Step 5 annotations.
 - **Severity** — for every fail/partial: 0–4 per the file's severity-guidance
@@ -99,25 +110,46 @@ any zero-applicable dimension drops out, 100/k each); overall rounded to integer
 grade from the band table. Show the arithmetic — the scorecard must let the reader
 recompute the overall by hand. Never fold severity into the score.
 
-### Step 4 — Markdown scorecard in chat
+### Report voice (applies to Step 4 chat text and the Step 5 report)
 
+Write for a busy designer who should get each point at a glance. Not an essay.
+
+- **Finding pattern:** state → problem → number → threshold it misses → source.
+  E.g. "Unselected labels (the category tabs and the whole bottom nav) sit at a
+  2.12:1 contrast ratio, less than half the 4.5:1 that text this size needs
+  (WCAG 1.4.3)."
+- **Lead with the fact, not a windup.** Cut filler adjectives (confident,
+  disciplined, thoughtful, clean, elegant, seamless) and any sentence that only
+  restates the obvious. If a summary sentence could describe any decent screen,
+  delete it.
+- **Punctuation:** don't reach for the em dash. Use a colon to introduce, "e.g."
+  in parentheses for examples, and commas. An occasional em dash is fine; a
+  paragraph built on them is not.
+- **Inferred priority/audience/goal:** when a finding depends on one, say so in
+  the finding itself and give advice that helps whichever way it turns out — not
+  a verdict that assumes your read is right (see the $500-promo example: if the
+  promo is the campaign's primary funnel the order is deliberate; if the goal is
+  getting this account to trade, it can't until it verifies). This is the same
+  discipline as the advisory channel, applied inside a scored finding.
+
+### Step 4 — Chat summary (short)
+
+The chat carries only the frame; the full scorecard, priorities, and watch list
+live in the HTML report (Step 5), which keeps chat output — and tokens — small.
 Emit, in order:
 
-1. **Header** — input type, platform classification + deciding signals,
-   assumptions, capture limitations (what couldn't be measured and why).
-2. **Per-dimension tables** — `ID | standard (short) | source | 🟢/🟡/🔴/⚪ |
-   reasoning`, one row per criterion including N/As (⚪ + reason). Subtotal line
-   under each: points / applicable → dimension score. Unscored dimensions say so
-   ("evaluated, unscored — single-screen") and still list their verdicts.
-3. **Overall** — the weighted-sum arithmetic written out, integer score, grade,
-   and the mandatory framing from scoring.md §4 (directional, ±5, adjacent grades
-   not meaningfully different).
-4. **Top-3 priorities** — highest-severity findings (severity, criterion, one-line
-   fix direction each), worded per the critique rules: observation → criterion →
-   user impact → suggested direction, severities as estimates.
-5. **Designer watch list** — the advisories: each as one line (observation +
-   which criterion flagged it + why it's advisory rather than scored). Worded as
-   "keep an eye on", never as a required change. Omit the section when empty.
+1. **Input** — type and source.
+2. **Platform + deciding signals** — the bucket, convention set, and the signals
+   that decided it.
+3. **Assumptions** — everything inferred (audience, product type, any inferred
+   priority), stated plainly.
+4. **What this audit could not measure** — the capture limitations and why.
+5. **Overall** — integer score and grade, with the scoring.md §4 framing
+   (directional, ±5, adjacent grades not meaningfully different), and the
+   coverage line (measured N of 63).
+
+Then point to the report for the per-criterion tables, the priorities, and the
+watch list. Do not reproduce those in chat.
 
 ### Step 5 — Annotated HTML report
 
@@ -131,10 +163,14 @@ Emit, in order:
 2. **Build:** `python3 scripts/build_report.py findings.json -o report.html`
    (add `--no-inline` beyond ~10 screens). The script validates first and fails
    loudly — fix the named field, don't bypass.
-3. **Verify markers in the browser pane:** open `report.html`, zoom to 2–3
-   markers, compare against the screenshot; nudge coordinates in findings.json
-   and rebuild until markers sit on their subjects ("this area", not "this
-   pixel"). Also confirm leader lines and hover-linking work.
+3. **Verify markers with `scripts/preview_markers.py findings.json`:** it draws
+   every marker onto the screenshot and writes one `*-markers.png` per screen.
+   Read that image once, check each marker sits on its subject ("this area", not
+   "this pixel"), nudge coordinates in findings.json, and rebuild. This replaces
+   the browser-pane loop for the common case and costs one image Read instead of
+   a screenshot-per-nudge cycle. Only open `report.html` in the browser when you
+   need to check something the flat image can't show (leader lines, hover-linking,
+   a layout regression).
 4. **Offer** to publish the report as an Artifact (user's call — never publish
    unprompted).
 

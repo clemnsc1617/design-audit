@@ -117,9 +117,4 @@ drift trend 1. Reserve 4 for a repurposed standard element that actively mislead
 
 Last reviewed: 2026-07
 
-Sources: Nielsen, "Consistency and Standards (Heuristic #4)", nngroup.com · Nielsen,
-"The Need for Web Design Standards" (2004), nngroup.com · Laws of UX, "Jakob's Law"
-· NN/g, "Design Systems 101" · Apple HIG: "Writing", "SF Symbols", "Designing for
-iOS" (developer.apple.com/design) · Material 3: "Design tokens", "Type scale &
-tokens", "Spacing" (8dp scale), "Grids & spacing", "Applying icons" (m3.material.io).
-Full provenance: `research/criteria-research.md`.
+Sources: see `research/reference-sources.md` (kept out of the skill's load path).

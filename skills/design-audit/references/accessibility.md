@@ -121,8 +121,4 @@ the finding's user cost, not its normative status.
 
 Last reviewed: 2026-07
 
-Sources: W3C, WCAG 2.2 (Recommendation 2023, upd. 2024), w3.org/TR/WCAG22/ · W3C
-Understanding WCAG 2.2 pages for SC 1.4.3, 1.4.11, 1.4.1, 1.1.1, 1.3.1, 1.4.12,
-2.5.8, 2.4.6, 2.4.7, 3.3.2, 3.3.1, 3.2.3, 3.2.4, 4.1.2 (2025–2026 updates) · W3C
-WAI, "Easy Checks" · W3C, WCAG-EM 1.0 (2014). Full provenance and the
-assessability derivation: `research/criteria-research.md`.
+Sources: see `research/reference-sources.md` (kept out of the skill's load path).

@@ -28,13 +28,27 @@ or Python + Pillow). Never upscale.
 ### 1. Screenshot file(s)
 
 **Pasted/dragged into chat with no file on disk (common case):** the model can see
-and audit the image, but the HTML report can only embed real files. Run the audit
-and chat scorecard normally, tell the user up front that the report needs the
-image as a file, and ask them to save/drop it (any path works) before Step 5.
-If the user can't supply the file, build the report with a clearly labeled
-layout-matched placeholder (blocks at the real proportions, marked
-"PLACEHOLDER — swap for the real screenshot"), never with a fabricated recreation
-of the UI. (Clemens ruling, 2026-07.)
+and audit the image, but the HTML report can only embed real files. The image
+almost always *is* on disk somewhere (the OS wrote it before the paste), so before
+asking the user to hunt for it, **offer to find it** — with permission each time:
+
+> "I can see the screenshot and I'll audit it now. The HTML report needs it as a
+> file on disk. Want me to look in the usual places (Downloads, Desktop, this
+> project), or would you rather tell me the path?"
+
+If they say go ahead: search the common locations, match by recency and by
+dimensions/aspect against the pasted image, and confirm the specific file with the
+user before using it ("Found `~/Downloads/Screenshot ….png`, 1320×2868 from 14:07
+— is that the one?"). Reading a candidate file is a regular action; **treat the
+directory listing as the permission boundary** — don't wander outside the offered
+locations, and never open a file the user didn't confirm.
+
+Either way, run the audit and chat scorecard normally regardless of whether the
+file turns up. If it genuinely can't be found and the user can't supply it, build
+the report with a clearly labeled layout-matched placeholder (blocks at the real
+proportions, marked "PLACEHOLDER — swap for the real screenshot"), never a
+fabricated recreation of the UI. A missing file degrades only the annotated-screens
+section; it never blocks the report. (Clemens rulings, 2026-07.)
 
 1. Read each file to confirm it is a legible UI screenshot (not corrupt, not blank).
 2. Copy into the working directory with ordered names; downscale if needed.

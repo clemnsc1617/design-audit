@@ -112,11 +112,4 @@ misdirect users away from the screen's purpose.
 
 Last reviewed: 2026-07
 
-Sources: Gordon, "Visual Hierarchy in UX" (2021), "5 Principles of Visual Design"
-(2020), "Using Grids in Interface Designs" (2022), nngroup.com · Harley, "Proximity"
-(2020), "Similarity" (2020), "Common Region" (2020), "Icon Usability" (2014),
-nngroup.com · Nielsen, "Photos as Web Content" (2010) · Butterick, *Practical
-Typography* (practicaltypography.com): "Line length", "Line spacing", "Point size",
-"Mixing fonts" · Rutter, webtypography.net §2.1.2 (2005), citing Bringhurst ·
-Soegaard/IxDF, "The Power of White Space" (2015/2020). Full provenance:
-`research/criteria-research.md`.
+Sources: see `research/reference-sources.md` (kept out of the skill's load path).

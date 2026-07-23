@@ -124,14 +124,4 @@ as an estimate — single-evaluator ratings are unreliable by the method's own s
 
 Last reviewed: 2026-07
 
-Sources: Nielsen, "10 Usability Heuristics" (1994, upd. 2024) and "Severity Ratings
-for Usability Problems" (1994), "Confirmation Dialogs" (2018), nngroup.com · Harley,
-"Visibility of System Status" (2018), "Icon Usability" (2014), nngroup.com · Kaley,
-"Match Between the System and the Real World" (2018) · Rosala, "User Control and
-Freedom" (2020) · Laubheimer, "Preventing User Errors: Slips" (2015) · Neusesser &
-Sunwall, "Error-Message Guidelines" (2023) · Budiu, "Memory Recognition and Recall"
-(2024) · Sherwin, "Placeholders in Form Fields Are Harmful" (2014/2018) · Whitenton,
-"Website Forms Usability" (2016) · Moran, "Flat UI Elements" (2015), "Characteristics
-of Minimalism" (2015) · Fessenden, "Aesthetic and Minimalist Design" (2021) · Krug,
-*Don't Make Me Think* 2nd ed. (2006) · Laws of UX, "Hick's Law" (Hick & Hyman 1952).
-Full provenance: `research/criteria-research.md`.
+Sources: see `research/reference-sources.md` (kept out of the skill's load path).
