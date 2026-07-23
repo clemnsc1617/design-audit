@@ -137,9 +137,9 @@
   .marker { position: absolute; width: 26px; height: 26px; border-radius: 50%; transform: translate(-50%, -50%);
     color: var(--on-accent); font: 700 12px var(--font); display: flex; align-items: center; justify-content: center;
     border: 1.5px solid rgba(255,255,255,.75); box-shadow: 0 1px 6px rgba(0,0,0,.28);
-    cursor: pointer; z-index: 3; opacity: .72; backdrop-filter: saturate(120%); transition: opacity .12s, transform .12s; }
-  .marker:hover { opacity: .92; }
-  .marker.selected { opacity: 1; transform: translate(-50%, -50%) scale(1.08); box-shadow: 0 0 0 3px rgba(255,255,255,.55), 0 2px 8px rgba(0,0,0,.35); }
+    cursor: pointer; z-index: 3; opacity: .55; backdrop-filter: saturate(120%); transition: opacity .12s, transform .12s; }
+  .marker:hover { opacity: .8; }
+  .marker.selected { opacity: .95; transform: translate(-50%, -50%) scale(1.08); box-shadow: 0 0 0 3px rgba(255,255,255,.55), 0 2px 8px rgba(0,0,0,.35); }
   .region { position: absolute; border: 2px dashed; border-radius: 8px; pointer-events: none; z-index: 2; opacity: .4;
     box-shadow: 0 0 0 1.5px rgba(255,255,255,.7), inset 0 0 0 1.5px rgba(255,255,255,.7); }
   .region.selected { opacity: 1; }
@@ -181,7 +181,7 @@
   th { text-align: left; font: 600 11.5px var(--font); text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3);
     padding: 8px 10px; border-bottom: 1px solid var(--line); }
   td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  tr.subtotal td { font-weight: 600; border-bottom: none; background: var(--surface-2); }
+  tr.subtotal td { font-weight: 600; border-bottom: none; background: var(--surface-2); text-align: center; }
   /* the hue lives in the dot; the 12px label stays readable ink */
   .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;
     white-space: nowrap; color: var(--ink-2); }
@@ -190,10 +190,20 @@
   .chip.fail::before { background: var(--fail); } .chip.na::before { background: var(--na); }
   .src { color: var(--ink-3); font-size: 12px; }
 
-  .flowcols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px; }
-  .flowcols ul { margin: 6px 0 0 18px; padding: 0; font-size: 13.5px; }
-  .flowcols li { margin: 6px 0; }
+  .flowcols { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 32px; align-items: start; }
+  @media (max-width: 700px) { .flowcols { grid-template-columns: 1fr; } }
+  .flowcol h3 { margin-bottom: 12px; }
+  .flowcard { display: flex; gap: 11px; align-items: flex-start;
+    background: var(--page); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+    margin: 0 0 10px; font-size: 13.5px; line-height: 1.5; color: var(--ink-2);
+    box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+  .flowcard:last-child { margin-bottom: 0; }
+  .flownum { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--card);
+    border: 1px solid var(--line); display: inline-flex; align-items: center; justify-content: center;
+    font: 700 12px var(--font); color: var(--ink-2); }
   footer { margin-top: 34px; padding-top: 16px; border-top: 1px solid var(--line); }
+  footer a { color: var(--blue); text-decoration: none; font-weight: 600; }
+  footer a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -475,7 +485,7 @@ const main = document.getElementById("report");
         `<td><span class="chip ${r.verdict}">${verdict}</span></td><td>${reason}</td>`));
     });
     if (dim && dim.scored) {
-      body.append($("tr", "subtotal", `<td colspan="3"></td><td colspan="2">` +
+      body.append($("tr", "subtotal", `<td colspan="5">` +
         `${dim.points} of ${dim.applicable} applicable points → <b>${dim.score.toFixed(1)}</b></td>`));
     }
     tb.append(body);
@@ -503,13 +513,18 @@ const main = document.getElementById("report");
   const card = $("section", "card");
   card.append($("h2", null, "User flow"));
   const cols = $("div", "flowcols");
-  [["What the flow shows", A.flow.observed], ["States and flows it implies but doesn't show", A.flow.missing],
+  // Only render a column when it has content — an empty group (e.g. no
+  // implied-but-missing states on a single-screen audit) is dropped, not shown
+  // as "Nothing recorded".
+  [["What the flow shows", A.flow.observed],
+   ["States and flows it implies but doesn't show", A.flow.missing],
    ["Worth auditing next", A.flow.suggestedNext]]
+    .filter(([, items]) => items.length)
     .forEach(([title, items]) => {
-      const col = $("div");
+      const col = $("div", "flowcol");
       col.append($("h3", null, title));
-      col.append(items.length ? $("ul", null, items.map(i => `<li>${esc(i)}</li>`).join(""))
-        : $("p", "muted small", "Nothing recorded."));
+      items.forEach((i, n) => col.append($("div", "flowcard",
+        `<span class="flownum">${n + 1}</span><span>${esc(i)}</span>`)));
       cols.append(col);
     });
   card.append(cols);
@@ -517,7 +532,8 @@ const main = document.getElementById("report");
 }
 
 main.append($("footer", "tiny",
-  `Generated by the <b>design-audit</b> plugin. Every check traces to a published source (see the scorecard). ` +
+  `Generated by <b>design-audit</b>, a plugin by <a href="https://www.clemenschen.com" target="_blank" rel="noopener">Clemens Chen</a>. ` +
+  `Every check traces to a published source (see the scorecard). ` +
   `Scores are directional (about ±5 between runs); severities are one reviewer's estimate.`));
 document.getElementById("themeToggle").addEventListener("click", () => {
   const r = document.documentElement;
