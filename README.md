@@ -7,6 +7,12 @@ report you can send to anyone.
 Built by Clemens Chen. Every criterion, threshold, and weight traces to a published
 source — the provenance lives in [`research/`](research/), which the skill never loads.
 
+## See a sample report
+
+[![A design-audit HTML report: scored dial, per-dimension bars, areas-to-fix and watch-list cards](docs/sample-report.png)](https://clemnsc1617.github.io/design-audit/sample-report.html)
+
+**[▶ Open the interactive sample →](https://clemnsc1617.github.io/design-audit/sample-report.html)** — click the markers, switch scorecard tabs, toggle light/dark. It runs on synthetic data (placeholder screens) to show the format, not a real audit.
+
 ## What it does
 
 Give it a screenshot, a URL, a Figma link, or a screen recording. It will:
@@ -42,10 +48,48 @@ claude plugin marketplace add /path/to/design-audit-plugin
 claude plugin install design-audit@design-audit-plugin
 ```
 
-Then just ask: `audit this screenshot`, `run a design audit on <url>`, `score this UI`.
-
 Requires Python 3 (stdlib only) for the report build. URL capture uses the in-app
 browser or headless Chrome; Figma capture needs the Figma MCP server authorized.
+
+## How to use
+
+Ask for an audit in plain language and hand over one input:
+
+```
+audit this screenshot
+run a design audit on https://example.com
+score this UI against usability and accessibility
+grade these three screens as a flow
+```
+
+The trigger is the intent to *audit / score / grade / evaluate* — a casual "what do
+you think of this?" deliberately won't start it (that's ordinary critique).
+
+**Inputs it accepts:**
+
+- **A screenshot** — a file path, or an image pasted straight into chat. If you
+  paste one, the audit runs on what it sees; for the HTML report it needs the file
+  on disk, so it will offer to find it in the usual places (Downloads, Desktop, the
+  project) or take a path from you. It never fabricates a mock UI.
+- **A URL** — captured at desktop and mobile widths; long pages as per-viewport
+  sections.
+- **A Figma link** — needs the Figma MCP server authorized in your session.
+- **A screen recording** — distinct screens are pulled as ordered frames.
+
+**One flow, or several screens?** For more than one screen it will ask whether they
+form an ordered flow. If they do, you get the cross-screen checks (continuity, state
+persistence, step order) and a missing-flows list. Order matters, so give them in
+sequence.
+
+**What you get back:**
+
+1. A short summary in chat: the input, how the platform was classified, what was
+   assumed, what couldn't be measured, and the overall score and grade.
+2. A self-contained `report.html` next to your input: executive summary, the
+   annotated screenshot with numbered markers, a designer watch list, the full
+   scorecard in per-dimension tabs, and the flow section. It embeds its own image
+   and font, so you can send the single file to anyone. It offers to publish as a
+   shareable Artifact — your call, never automatic.
 
 ## What it is honest about
 
@@ -69,9 +113,9 @@ The audit only scores what the evidence supports, and says so everywhere:
   ±3–5%; region boxes and the verification loop mitigate it, and DOM/Figma geometry
   is used whenever available.
 
-If an image is pasted into chat rather than saved as a file, the audit still runs —
-but the report needs a real file to embed, so it will ask for one rather than
-fabricate a mock.
+If an image is pasted into chat rather than saved as a file, the audit still runs.
+The report needs a real file to embed, so it offers to find the file (with your
+confirmation) or takes a path from you, and never fabricates a mock.
 
 ## Scoring
 
@@ -101,8 +145,10 @@ skills/design-audit/
   SKILL.md               orchestration, steps 0–6
   references/            the rubric: one file per dimension, plus platforms, scoring, input-capture
   assets/                report template + findings schema
-  scripts/build_report.py  findings.json → self-contained HTML (Python 3 stdlib)
+  scripts/                build_report.py (findings.json → HTML), measure.py (pixel
+                          contrast/size), preview_markers.py (marker check), pngio.py
   evals/evals.json       judged test cases, including regressions worth keeping fixed
+fixtures/                a synthetic findings.json for previewing template changes
 research/                deep-research provenance — never loaded by the skill
 PLAN.md, CLAUDE.md       build plan and working agreement
 ```
@@ -112,4 +158,6 @@ PLAN.md, CLAUDE.md       build plan and working agreement
 Criteria are grounded in W3C WCAG 2.2, Apple Human Interface Guidelines, Material
 Design 3, Nielsen Norman Group, Nielsen's heuristics and severity-rating method,
 Krug's *Don't Make Me Think*, Laws of UX, and Butterick/Bringhurst on typography.
-Each reference file ends with its own source list and a "Last reviewed" date.
+Each criterion cites its source inline; the long-form source lists live in
+[`research/reference-sources.md`](research/reference-sources.md), kept out of the
+skill's load path.
