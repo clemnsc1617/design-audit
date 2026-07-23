@@ -70,9 +70,10 @@ Verdicts: pass = 1, partial = 0.5, fail = 0, N/A excluded from the denominator.
 ### CO-08 Icon family and weight
 - **Standard:** All icons share one family: stroke weight, fill style, corner style, optical size matched to adjacent text.
 - **Source:** Material 3, "Applying icons" ("Apply weights consistently" / "Don't mix different weights"); Apple HIG, "SF Symbols" (custom symbols consistent with system detail/weight).
-- **Check:** Collect visible icons; compare weight, filled-vs-outlined (selected-state fills excepted), corner style, size relative to paired text. On iOS check custom icons against SF Symbols weight; on Android against one Material Symbols style.
+- **Check:** Collect visible icons; compare weight, filled-vs-outlined (selected-state fills excepted), corner style, size relative to paired text. Before calling a fill/outline inconsistency from a screenshot, **measure it** — `scripts/measure.py --iconfill label:x0,y0,x1,y1` for each icon; the *spread* between siblings is the reliable signal (a small spread means no outlier). The eye over-reads "filled" from small solid details (an icon's dot-heads, a people glyph's bodies), so a bare screenshot judgment is a common false positive — the measurement is the guard.
+- **Reference-match caution:** identifying an icon as "the outlined/filled Material Symbol X" or "SF Symbol Y" requires the actual library, which the audit does not carry (SF Symbols can't be redistributed; matching a glyph to Material's set is unreliable). Only assert a specific library/variant match when **Figma or the DOM supplies the component identity** — otherwise judge internal consistency (do the icons here agree with *each other*), not conformance to a named set.
 - **Pass:** one family, uniform weight/style/sizing. **Partial:** one deviating icon. **Fail:** mixed families or filled/outlined mixing without state semantics.
-- **Applies:** both · **Platforms:** all · **Needs:** screenshot-only (Figma reveals mixed libraries)
+- **Applies:** both · **Platforms:** all · **Needs:** screenshot-only for internal consistency (Figma/DOM required to name the library)
 
 ### CO-09 Collection uniformity and alignment
 - **Standard:** Same-kind items in a collection (thumbnails, avatars, cards, leading icons) share identical size and a common alignment line.

@@ -14,6 +14,10 @@ Examples (coords are pixels in the ORIGINAL screenshot):
   python3 measure.py shot.png --vspan 400,960,1050
   # horizontal runs across a row (dot/element widths + pitch)
   python3 measure.py shot.png --hruns 1420,300,1020
+  # icon fill: is a glyph filled or stroked? give each icon's tight bbox.
+  # Pass one --iconfill per icon; label:x0,y0,x1,y1. Compares them so an
+  # odd-one-out weight/fill (CO-08) shows as a number, not a guess.
+  python3 measure.py shot.png --iconfill explore:95,2600,235,2665 --iconfill social:1135,2600,1290,2675
   # add --scale 3 to also print point values (3x device screenshot => 1pt=3px)
 """
 
@@ -66,6 +70,30 @@ def hruns(rows, y, x0, x1, thresh=0.85):
     return out
 
 
+def icon_fill(rows, x0, y0, x1, y1, thresh=0.80):
+    """Filled-vs-stroked signal for one glyph in its tight bbox.
+
+    Returns (solidity, ink_pixels). solidity = interior ink / total ink, where an
+    'interior' ink pixel is one whose 4 neighbours are all ink. A stroked glyph
+    is nearly all edge, so solidity is low (~0.2-0.45); a filled glyph has solid
+    regions, so it climbs (~0.6-0.9). This ignores how much whitespace sits in
+    the bbox, so badges or a low-sitting glyph don't skew it the way a raw
+    ink-to-bbox ratio does. Compare siblings; flag the outlier, don't judge one
+    icon alone.
+    """
+    ink = set()
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            if lum(rows[y][x]) < thresh:
+                ink.add((x, y))
+    if not ink:
+        return None
+    interior = sum(1 for (x, y) in ink
+                   if (x - 1, y) in ink and (x + 1, y) in ink
+                   and (x, y - 1) in ink and (x, y + 1) in ink)
+    return interior / len(ink), len(ink)
+
+
 def main():
     ap = argparse.ArgumentParser(description="Measure contrast and sizes on a screenshot.")
     ap.add_argument("image")
@@ -73,6 +101,7 @@ def main():
     ap.add_argument("--point", metavar="x,y", action="append", default=[])
     ap.add_argument("--vspan", metavar="x,y0,y1", action="append", default=[])
     ap.add_argument("--hruns", metavar="y,x0,x1", action="append", default=[])
+    ap.add_argument("--iconfill", metavar="label:x0,y0,x1,y1", action="append", default=[])
     ap.add_argument("--scale", type=float, default=0,
                     help="px per pt (e.g. 3 for a 3x device screenshot) to also print pt")
     a = ap.parse_args()
@@ -110,6 +139,33 @@ def main():
             typ = sorted(widths)[len(widths) // 2]
             print(f"    typical width {typ}px{pt(typ,s)}"
                   + (f", pitch {pitch[len(pitch)//2]}px{pt(pitch[len(pitch)//2],s)}" if pitch else ""))
+
+    if a.iconfill:
+        results = []
+        for spec in a.iconfill:
+            label, box = spec.split(":", 1)
+            x0, y0, x1, y1 = map(int, box.split(","))
+            r = icon_fill(rows, x0, y0, x1, y1)
+            results.append((label, r))
+        # solidity is a RELATIVE measure only. Absolute values drift with
+        # resolution (thick anti-aliased strokes read as interior), so never
+        # call one icon "filled" from its number alone — only the spread between
+        # siblings is trustworthy.
+        vals = [r[0] for _, r in results if r]
+        for label, r in results:
+            if not r:
+                print(f"  iconfill {label}: no ink found in box")
+                continue
+            solidity, npx = r
+            print(f"  iconfill {label}: solidity {solidity:.2f}, {npx} ink px")
+        if len(vals) >= 2:
+            spread = max(vals) - min(vals)
+            odd = "" if spread < 0.20 else \
+                f" (highest {max(vals):.2f}, lowest {min(vals):.2f} — inspect that pair before calling CO-08)"
+            print(f"    spread {spread:.2f} across {len(vals)} icons: "
+                  f"{'consistent, no fill-weight outlier' if spread < 0.20 else 'one icon differs'}{odd}")
+        else:
+            print("    (pass 2+ icons to compare — a single icon's solidity is not interpretable alone)")
 
 
 if __name__ == "__main__":
