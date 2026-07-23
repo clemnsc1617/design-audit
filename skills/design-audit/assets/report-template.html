@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{TITLE}} — design audit</title>
+<title>{{TITLE}} · design audit</title>
 <style>
   /* ── Restyling this report ──────────────────────────────────────────────
      Everything visual is in the variables below plus the @font-face.
@@ -246,7 +246,7 @@ const main = document.getElementById("report");
     .forEach(([k, v]) => ul.append($("li", null, `${k}: <b>${esc(v)}</b>`)));
   sec.append(ul);
   const sig = A.platform.screens.map(s =>
-    `<li><b>${esc(s.screenId)}</b> → ${esc(s.bucket)} — ${s.signals.map(esc).join("; ")}</li>`).join("");
+    `<li><b>${esc(s.screenId)}</b> → ${esc(s.bucket)}: ${s.signals.map(esc).join("; ")}</li>`).join("");
   sec.append($("details", "assump",
     `<summary>How we classified this design, what we assumed, and what we couldn't measure</summary>
      <ul>${sig}</ul>
@@ -282,7 +282,7 @@ const main = document.getElementById("report");
   left.append($("div", "coverage",
     `<span>Measured ${applicable} of ${A.scorecard.length} checks</span>
      <span class="info"><button type="button" aria-label="About this score">i</button>
-       <span class="tip" role="tooltip">The remaining checks didn't apply to this input — the scorecard gives a reason for each. Fewer checks means a thinner score, so compare coverage before comparing scores.<br><br>Treat the score as directional: re-runs vary by about ±5 points, so neighbouring grades read the same.</span>
+       <span class="tip" role="tooltip">The remaining checks didn't apply to this input. The scorecard gives a reason for each. Fewer checks means a thinner score, so compare coverage before comparing scores.<br><br>Treat the score as directional: re-runs vary by about ±5 points, so neighbouring grades read the same.</span>
      </span>`));
   cols.append(left);
 
@@ -332,7 +332,7 @@ const main = document.getElementById("report");
   lower.append(fixes);
 
   const watch = $("div");
-  watch.append($("h3", null, `Designer watch list <span class="src">— worth an eye, no score impact</span>`));
+  watch.append($("h3", null, `Designer watch list <span class="src">(worth an eye, no score impact)</span>`));
   if (A.advisories.length) {
     A.advisories.forEach(a => watch.append($("div", "advcard", `<b>${esc(a.title)}</b><p>${esc(a.note)}</p>`)));
   } else {
@@ -473,7 +473,7 @@ const main = document.getElementById("report");
 
     const panel = $("div", "tabpanel" + (idx === 0 ? " active" : ""));
     panel.dataset.tab = dimId;
-    if (dim && !dim.scored) panel.append($("p", "tiny", "Reviewed but not scored for this audit — findings still count, the math doesn't."));
+    if (dim && !dim.scored) panel.append($("p", "tiny", "Reviewed but not scored for this audit: findings still count, the math doesn't."));
     const tb = $("table");
     tb.innerHTML = `<thead><tr><th>ID</th><th>What good looks like</th><th>Source</th><th>Verdict</th><th>Why</th></tr></thead>`;
     const body = $("tbody");

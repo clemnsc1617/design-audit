@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Style preview — synthetic fixture, not a real audit",
+    "title": "Style preview: synthetic fixture, not a real audit",
     "date": "2026-07-22",
     "inputType": "screenshot",
     "overall": 77,
@@ -39,7 +39,7 @@
   "scorecard": [
     {
       "criterionId": "US-01", "dimension": "US",
-      "standard": "System status is visible — the screen says what state it is in",
+      "standard": "System status is visible: the screen says what state it is in",
       "source": "Nielsen, 10 Usability Heuristics (H1)",
       "verdict": "pass",
       "reasoning": "Fixture row: rendered as a pass so the green verdict dot appears in this table."
@@ -108,7 +108,7 @@
       "source": "Material Design 3, Design tokens",
       "verdict": "na",
       "reasoning": "Not assessable from pixels.",
-      "naReason": "Same as CO-03 — this is what an entirely unscored dimension looks like."
+      "naReason": "Same as CO-03. This is what an entirely unscored dimension looks like."
     },
     {
       "criterionId": "UF-02", "dimension": "UF",
@@ -126,21 +126,21 @@
     }
   ],
   "screens": [
-    { "id": "screen-01", "label": "Placeholder screen 1 — landing", "image": "screen-01.png" },
-    { "id": "screen-02", "label": "Placeholder screen 2 — form", "image": "screen-02.png" }
+    { "id": "screen-01", "label": "Placeholder screen 1: landing", "image": "screen-01.png" },
+    { "id": "screen-02", "label": "Placeholder screen 2: form", "image": "screen-02.png" }
   ],
   "findings": [
     {
       "id": 1, "screenId": "screen-01", "criterionId": "VD-05", "severity": 4,
-      "title": "Critical — the highest severity, rendered in red",
+      "title": "Critical: the highest severity, rendered in red",
       "evidence": "Fixture finding pinned to the primary-action block. Exists so the red tag, red marker and red card tint are all visible in one place.",
-      "fix": "Nothing to fix — this is a fixture. Real findings name a direction and the principle it restores.",
+      "fix": "Nothing to fix here; this is a fixture. Real findings name a direction and the principle they restore.",
       "source": "Apple HIG, Buttons",
       "x": 50, "y": 64.7
     },
     {
       "id": 2, "screenId": "screen-01", "criterionId": "US-10", "severity": 3,
-      "title": "Major — shares the red hue with Critical",
+      "title": "Major: shares the red hue with Critical",
       "evidence": "Pinned to the first content card. Major and Critical deliberately share one red: both mean fix this.",
       "fix": "Fixture placeholder.",
       "source": "Nielsen, 10 Usability Heuristics (H6)",
@@ -148,7 +148,7 @@
     },
     {
       "id": 3, "screenId": "screen-01", "criterionId": "AC-06", "severity": 2,
-      "title": "Minor — orange, and drawn as a region rather than a point",
+      "title": "Minor: orange, drawn as a region rather than a point",
       "evidence": "Carries w and h, so the template renders a dashed region box over the hero block instead of a bare marker.",
       "fix": "Fixture placeholder.",
       "source": "W3C WCAG 2.2, SC 1.4.12",
@@ -156,7 +156,7 @@
     },
     {
       "id": 4, "screenId": "screen-02", "criterionId": "AC-02", "severity": 1,
-      "title": "Cosmetic — purple",
+      "title": "Cosmetic: purple",
       "evidence": "Pinned to the second form field on screen 2, so the multi-screen rendering path gets exercised too.",
       "fix": "Fixture placeholder.",
       "source": "W3C WCAG 2.2, SC 1.4.3",
@@ -164,7 +164,7 @@
     },
     {
       "id": 5, "screenId": "screen-02", "criterionId": "UF-02", "severity": 0,
-      "title": "Note — blue, the same hue as the watch list",
+      "title": "Note: blue, the same hue as the watch list",
       "evidence": "Lowest severity. Blue is shared with the designer watch list because both mean no score impact.",
       "fix": "Fixture placeholder.",
       "source": "Nielsen, 10 Usability Heuristics (H1)",
@@ -174,7 +174,7 @@
   "advisories": [
     {
       "title": "This is what a watch-list card looks like",
-      "note": "Advisories are the channel for things worth a designer's attention that should not move the score — deliberate patterns, audience-dependent calls, and judgements that need context the audit does not have.",
+      "note": "Advisories are the channel for things worth a designer's attention that should not move the score: deliberate patterns, audience-dependent calls, and judgements that need context the audit does not have.",
       "criterionId": "US-10"
     },
     {
