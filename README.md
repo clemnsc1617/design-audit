@@ -13,6 +13,10 @@ source — the provenance lives in [`research/`](research/), which the skill nev
 
 **[▶ Open the interactive sample →](https://clemnsc1617.github.io/design-audit/sample-report.html)** — click the markers, switch scorecard tabs, toggle light/dark. It runs on synthetic data (placeholder screens) to show the format, not a real audit.
 
+Findings are pinned to the screen itself. Each numbered marker (or a dashed box, where the note covers an area) opens its annotation alongside, one at a time, colour-coded by severity:
+
+[![An annotated screen: numbered markers and a dashed region on the screenshot, with the selected finding's card beside it](docs/sample-annotated.png)](https://clemnsc1617.github.io/design-audit/sample-report.html)
+
 ## What it does
 
 Give it a screenshot, a URL, a Figma link, or a screen recording. It will:
